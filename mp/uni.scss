@@ -1,8 +1,64 @@
-/* uni-app 全局 scss 变量（P1 起把 version.js 里的 THEME 同步到这里） */
+/**
+ * zika 全局样式变量 —— 与 DESIGN.md v1.00 一一对应
+ * 用法：页面 <style lang="scss"> 里 @import '@/uni.scss' 后直接用 $zk-*
+ * 规则：页面禁止硬编码色值，一律引用变量
+ */
+
+/* 朱砂（主色，全局占比 ≤ 10%） */
 $zk-primary: #D94F3D;
+$zk-primary-deep: #B53A2B;
 $zk-primary-light: #FBE7E3;
+$zk-primary-wash: #FDF3F0;
+
+/* 奖励金（只用于激励元素） */
+$zk-gold: #F2B230;
+$zk-gold-deep: #D9941C;
+$zk-gold-light: #FEF4DE;
+
+/* 纸与墨 */
 $zk-bg: #FDF9F3;
 $zk-card: #FFFFFF;
 $zk-text: #2B2B2B;
+$zk-text-2: #5C574F;
 $zk-sub: #8A8378;
 $zk-line: #EDE6DA;
+$zk-line-soft: #F5EFE5;
+
+/* 语义（答错用 warn，不用红） */
+$zk-success: #57A88F;
+$zk-success-light: #E8F4F0;
+$zk-warn: #E8A33D;
+$zk-warn-light: #FDF2E0;
+
+/* 间距基数 4 */
+$zk-sp-1: 4px;
+$zk-sp-2: 8px;
+$zk-sp-3: 12px;
+$zk-sp-4: 16px;
+$zk-sp-5: 24px;
+$zk-sp-6: 32px;
+$zk-sp-7: 48px;
+
+/* 圆角 */
+$zk-r-sm: 8px;
+$zk-r-md: 12px;
+$zk-r-lg: 16px;
+$zk-r-xl: 20px;
+$zk-r-full: 999px;
+
+/* 阴影 */
+$zk-sh-sm: 0 1px 2px rgba(43, 43, 43, .04);
+$zk-sh-md: 0 2px 8px rgba(43, 43, 43, .06), 0 1px 2px rgba(43, 43, 43, .04);
+$zk-sh-lg: 0 8px 24px rgba(43, 43, 43, .10), 0 2px 6px rgba(43, 43, 43, .05);
+$zk-sh-gold: 0 4px 14px rgba(242, 178, 48, .32);
+
+/* 字号（全部 px，不随屏缩放） */
+$zk-fs-hero: 96px;
+$zk-fs-display: 22px;
+$zk-fs-title: 17px;
+$zk-fs-body: 15px;
+$zk-fs-caption: 13px;
+$zk-fs-micro: 11px;
+
+/* 动效 */
+$zk-ease: cubic-bezier(.34, 1.56, .64, 1);
