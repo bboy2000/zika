@@ -1,0 +1,61 @@
+{
+  "pages": [
+    {
+      "path": "pages/cards/cards",
+      "style": {
+        "navigationBarTitleText": "字卡"
+      }
+    },
+    {
+      "path": "pages/search/search",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
+    },
+    {
+      "path": "pages/wrong/wrong",
+      "style": {
+        "navigationBarTitleText": "生字本"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "字卡",
+    "navigationBarBackgroundColor": "#FDF9F3",
+    "backgroundColor": "#FDF9F3",
+    "backgroundColorTop": "#FDF9F3",
+    "backgroundColorBottom": "#FDF9F3"
+  },
+  "tabBar": {
+    "color": "#8A8378",
+    "selectedColor": "#D94F3D",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "fontSize": "11px",
+    "list": [
+      {
+        "pagePath": "pages/cards/cards",
+        "text": "字卡"
+      },
+      {
+        "pagePath": "pages/search/search",
+        "text": "搜索"
+      },
+      {
+        "pagePath": "pages/wrong/wrong",
+        "text": "生字本"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  }
+}
