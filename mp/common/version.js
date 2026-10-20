@@ -2,7 +2,7 @@
  * 全局版本号：每次改动递增（P0 = v0.1.0，v0.1.1 = 数据层+双端配置）
  * 规则：改动提交信息与本文件版本号必须一致
  */
-export const APP_VERSION = 'v0.1.2'
+export const APP_VERSION = 'v0.1.3'
 
 /**
  * 设计令牌 —— 与 DESIGN.md v1.00 一一对应

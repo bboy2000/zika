@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>zika 字卡 · 视觉设计方案 v1.00</title>
+<title>zika 字卡 · UI 设计稿 v1.01</title>
 <style>
 :root{
   --c-primary:#D94F3D; --c-primary-deep:#B53A2B; --c-primary-light:#FBE7E3; --c-primary-wash:#FDF3F0;
-  --c-gold:#F2B230; --c-gold-deep:#D9941C; --c-gold-light:#FEF4DE;
+  --c-gold:#F2B230; --c-gold-deep:#D9941C; --c-gold-light:#FEF4DE; --c-gold-soft:#FDF6E6;
   --c-bg:#FDF9F3; --c-surface:#FFFFFF; --c-text:#2B2B2B; --c-text-2:#5C574F; --c-text-3:#8A8378;
   --c-line:#EDE6DA; --c-line-soft:#F5EFE5;
+  --c-grid:#E3B3AA; --c-py:#B9C6D6;
   --c-success:#57A88F; --c-success-light:#E8F4F0; --c-warn:#E8A33D; --c-warn-light:#FDF2E0;
   --sh-sm:0 1px 2px rgba(43,43,43,.04);
   --sh-md:0 2px 8px rgba(43,43,43,.06),0 1px 2px rgba(43,43,43,.04);
@@ -17,6 +18,10 @@
   --sh-gold:0 4px 14px rgba(242,178,48,.32);
   --ease:cubic-bezier(.34,1.56,.64,1);
   --font:"PingFang SC","HarmonyOS Sans SC","Source Han Sans SC","Noto Sans CJK SC","Microsoft YaHei",system-ui,sans-serif;
+  /* 汉字专用：楷体栈（预览用系统楷体；小程序内需 wx.loadFontFace，见第 6 节） */
+  --kai:"Kaiti SC","STKaiti","KaiTi","楷体","KaiTi_GB2312","Noto Serif SC",serif;
+  /* 拼音专用：需良好的声调符号支持 */
+  --pyfont:Arial,Helvetica,"Helvetica Neue",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 body{
@@ -25,223 +30,257 @@ body{
   background-image:radial-gradient(rgba(43,43,43,.035) 1px, transparent 1px);
   background-size:16px 16px;
 }
-.wrap{max-width:1280px;margin:0 auto}
+.wrap{max-width:1340px;margin:0 auto}
 
 /* ---------- 文档头 ---------- */
-.doc-head{margin-bottom:44px}
-.doc-head .kicker{
-  font-size:12px;letter-spacing:2px;color:var(--c-primary);
-  font-weight:600;text-transform:uppercase;margin-bottom:10px;
-}
+.doc-head{margin-bottom:40px}
+.doc-head .kicker{font-size:12px;letter-spacing:2px;color:var(--c-primary);font-weight:600;margin-bottom:10px}
 .doc-head h1{font-size:34px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px}
 .doc-head h1 em{font-style:normal;color:var(--c-primary)}
-.doc-head p{font-size:15px;color:var(--c-text-2);max-width:760px}
+.doc-head p{font-size:15px;color:var(--c-text-2);max-width:820px}
 .doc-head .meta{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
 
 /* ---------- 分区标题 ---------- */
-.sec{margin:56px 0 24px;display:flex;align-items:baseline;gap:12px}
-.sec .num{
-  font-size:12px;font-weight:700;color:#fff;background:var(--c-primary);
-  width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex:none;
-}
+.sec{margin:52px 0 22px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec .num{font-size:12px;font-weight:700;color:#fff;background:var(--c-primary);
+  width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex:none}
 .sec h2{font-size:19px;font-weight:600}
 .sec .note{font-size:13px;color:var(--c-text-3)}
 
 /* ---------- 色板 ---------- */
-.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:12px}
 .sw{border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--sh-sm);border:1px solid var(--c-line-soft)}
-.sw .chip{height:74px;display:grid;place-items:end start;padding:10px}
+.sw .chip{height:70px;display:grid;place-items:end start;padding:10px}
 .sw .chip span{font-size:11px;font-weight:600;letter-spacing:.4px}
 .sw .info{padding:9px 11px 11px}
 .sw .info b{display:block;font-size:12.5px;font-weight:600}
 .sw .info code{font-size:11px;color:var(--c-text-3);font-family:ui-monospace,monospace}
 
 /* ---------- 设备框 ---------- */
-.stage{display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start}
-.devices{display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start}
-
-.phone{
-  width:375px;height:748px;flex:none;background:#221F1C;border-radius:46px;
-  padding:11px;box-shadow:0 24px 60px rgba(43,43,43,.22),0 2px 6px rgba(43,43,43,.12);
-  position:relative;
-}
-.phone .screen{
-  width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--c-bg);
-  display:flex;flex-direction:column;position:relative;
-}
-.tablet{
-  width:486px;height:648px;flex:none;background:#221F1C;border-radius:26px;
-  padding:16px;box-shadow:0 24px 60px rgba(43,43,43,.22);
-}
-.tablet .screen{
-  width:810px;height:1080px;border-radius:12px;overflow:hidden;background:var(--c-bg);
-  transform:scale(.56);transform-origin:top left;position:relative;
-  display:flex;flex-direction:column;
-}
-.tablet .viewport{width:810px;height:1080px;transform:scale(.56);transform-origin:top left}
-
-.cap{margin-top:14px;text-align:center;font-size:12px;color:var(--c-text-3);letter-spacing:.5px}
+.stage{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-start}
+.devices{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;height:748px;flex:none;background:#221F1C;border-radius:46px;padding:11px;
+  box-shadow:0 24px 60px rgba(43,43,43,.22),0 2px 6px rgba(43,43,43,.12);position:relative}
+.phone .screen{width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--c-bg);
+  display:flex;flex-direction:column;position:relative}
+.tablet{width:486px;height:648px;flex:none;background:#221F1C;border-radius:26px;padding:16px;
+  box-shadow:0 24px 60px rgba(43,43,43,.22);overflow:hidden}
+.tablet .screen{width:810px;height:1080px;border-radius:12px;overflow:hidden;background:var(--c-bg);
+  transform:scale(.56);transform-origin:top left;position:relative;display:flex;flex-direction:column}
+.cap{margin-top:14px;text-align:center;font-size:12px;color:var(--c-text-3);letter-spacing:.5px;max-width:375px}
 
 /* ---------- 手机内页通用 ---------- */
-.statusbar{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:12px;font-weight:600;color:var(--c-text);flex:none}
-.navbar{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex:none}
-.navbar .title{font-size:17px;font-weight:600}
+.statusbar{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;
+  font-size:12px;font-weight:600;color:var(--c-text);flex:none}
+.navbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex:none}
+.navbar .title{font-size:16px;font-weight:600}
+.navbar .sub{font-size:12.5px;color:var(--c-text-3)}
 .navbar .back{width:28px;height:28px;display:grid;place-items:center;font-size:20px;color:var(--c-text-2)}
-.body-scroll{flex:1;overflow:hidden;padding:0 16px}
-.tabbar{
-  height:58px;flex:none;background:#fff;border-top:1px solid var(--c-line-soft);
-  display:flex;padding-bottom:6px;
-}
-.tabbar .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;color:var(--c-text-3)}
+.body-scroll{flex:1;overflow:hidden;padding:0 14px 10px}
+.tabbar{height:56px;flex:none;background:#fff;border-top:1px solid var(--c-line-soft);display:flex;padding-bottom:4px}
+.tabbar .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:10.5px;color:var(--c-text-3)}
 .tabbar .tab.on{color:var(--c-primary);font-weight:600}
 .tabbar .ico{font-size:17px;line-height:1}
 
-/* 顶部概览 */
-.overview{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--c-line-soft);
-  border-radius:16px;padding:12px 14px;box-shadow:var(--sh-sm);margin-bottom:16px}
-.ring{width:46px;height:46px;border-radius:50%;flex:none;position:relative;
-  background:conic-gradient(var(--c-primary) 0 32%, var(--c-line-soft) 32% 100%)}
-.ring::after{content:"";position:absolute;inset:5px;background:#fff;border-radius:50%}
-.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700;z-index:1;color:var(--c-primary)}
-.ov-txt{flex:1}
-.ov-txt .l1{font-size:14px;font-weight:600}
-.ov-txt .l2{font-size:11.5px;color:var(--c-text-3);margin-top:2px}
-.streak{display:flex;align-items:center;gap:4px;background:var(--c-gold-light);border-radius:999px;
-  padding:5px 10px;font-size:12px;font-weight:700;color:var(--c-gold-deep)}
-
-/* 课次行 */
-.lesson-head{display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px}
-.lesson-head .ln{font-size:13px;font-weight:600;color:var(--c-text-2)}
-.lesson-head .cnt{font-size:11.5px;color:var(--c-text-3)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.cchar{
-  background:#fff;border:1px solid var(--c-line-soft);border-radius:16px;
-  padding:16px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:5px;
-  box-shadow:var(--sh-sm);position:relative;transition:transform .16s var(--ease);
+/* ---------- 拼音四线三格（唯一正确实现） ----------
+   四线 = border-top + 2 条渐变线 + border-bottom
+   三格 = 上格(声调) / 中格(主字母) / 下格(下伸)
+   基线压在第 3 线上：bottom 微调 —— 文字绝不能有背景色，否则会盖掉格线 */
+.pg{display:inline-flex;align-items:flex-start;position:relative;padding:0 7px;border-radius:2px;
+  vertical-align:middle;border-top:1px solid var(--c-py);border-bottom:1px solid var(--c-py);
+  background-clip:padding-box;
+  background-image:linear-gradient(to bottom,
+    transparent 0, transparent calc(33.333% - .5px), var(--c-py) calc(33.333% - .5px),
+    var(--c-py) calc(33.333% + .5px), transparent calc(33.333% + .5px),
+    transparent calc(66.667% - .5px), var(--c-py) calc(66.667% - .5px),
+    var(--c-py) calc(66.667% + .5px), transparent calc(66.667% + .5px));
 }
-.cchar:active{transform:scale(.97)}
-.cchar .zi{font-size:52px;font-weight:600;line-height:1;color:var(--c-text)}
-.cchar .py{font-size:12px;color:var(--c-text-3);letter-spacing:.3px}
-.cchar.learned::after{content:"";position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:50%;background:var(--c-success)}
+/* i 必须无背景色，否则会盖掉格线；x-height 正好填满中格，基线压在第 3 线上 */
+.pg i{font-style:normal;font-family:var(--pyfont);font-weight:500;color:#2B2F36;
+  white-space:nowrap;position:relative;letter-spacing:.2px}
+.pg.sm{height:28px} .pg.sm i{font-size:16.5px;line-height:26px;top:-1.4px}
+.pg.md{height:36px} .pg.md i{font-size:21.5px;line-height:34px;top:-1.8px}
+.pg.lg{height:46px} .pg.lg i{font-size:28px;line-height:44px;top:-2.4px}
+.py-sep{color:#B8B0A4;font-size:12px;margin:0 1px;font-family:var(--pyfont)}
+
+/* 发音按钮 */
+.spk{width:26px;height:26px;border-radius:50%;border:1.5px solid #EBCB8A;background:var(--c-gold-soft);
+  color:#8A6420;display:inline-grid;place-items:center;flex:none;cursor:pointer}
+.spk svg{width:13px;height:13px;display:block}
+.spk.on{background:var(--c-gold);border-color:var(--c-gold);color:#fff}
+.spk.lg{width:32px;height:32px;border-width:1.5px}
+.spk.lg svg{width:15px;height:15px}
+
+/* ---------- 列表顶部概览 ---------- */
+.overview{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--c-line-soft);
+  border-radius:14px;padding:10px 12px;box-shadow:var(--sh-sm);margin-bottom:12px}
+.ring{width:40px;height:40px;border-radius:50%;flex:none;position:relative;
+  background:conic-gradient(var(--c-primary) 0 32%, var(--c-line-soft) 32% 100%)}
+.ring::after{content:"";position:absolute;inset:4px;background:#fff;border-radius:50%}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;font-weight:700;z-index:1;color:var(--c-primary)}
+.ov-txt{flex:1;min-width:0}
+.ov-txt .l1{font-size:13.5px;font-weight:600}
+.ov-txt .l2{font-size:11px;color:var(--c-text-3);margin-top:1px}
+.streak{display:flex;align-items:center;gap:3px;background:var(--c-gold-light);border-radius:999px;
+  padding:4px 9px;font-size:12px;font-weight:700;color:var(--c-gold-deep);flex:none}
+
+/* ---------- 课次 + 字卡网格 ---------- */
+.lesson-head{display:flex;align-items:center;justify-content:space-between;margin:2px 0 8px}
+.lesson-head .ln{font-size:13px;font-weight:600;color:var(--c-text-2)}
+.lesson-head .cnt{font-size:11px;color:var(--c-text-3)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+
+/* 字卡：大字 → 四线三格拼音+发音 → 组词 */
+.cc{background:#fff;border:1px solid var(--c-line-soft);border-radius:14px;padding:10px 8px 9px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:var(--sh-sm);
+  position:relative;overflow:hidden}
+.cc .zi{font-family:var(--kai);font-size:52px;font-weight:400;line-height:1.08;color:var(--c-text)}
+.cc .pyrow{display:flex;align-items:center;gap:5px}
+.cc .ws{display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden;max-width:100%;margin-top:1px}
+.cc .ws span{font-size:10.5px;color:#7A7465;background:var(--c-gold-soft);border:1px solid #F0DFBC;
+  border-radius:999px;padding:0 6px;line-height:16px;white-space:nowrap}
+.cc .done{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--c-success)}
+.cc .newf{position:absolute;top:6px;left:7px;font-size:9px;font-weight:700;color:var(--c-primary);
+  background:var(--c-primary-light);border-radius:4px;padding:0 4px;line-height:14px}
 
 /* ---------- 详情页 ---------- */
-.hz-head{display:flex;flex-direction:column;align-items:center;padding:6px 0 14px}
-.four-line{position:relative;width:96px;height:32px;display:grid;place-items:center;margin-bottom:6px}
-.four-line::before{
-  content:"";position:absolute;inset:0;
-  background:repeating-linear-gradient(to bottom,transparent 0 7px,var(--c-line) 7px 8px);
-  opacity:.85;
-}
-.four-line span{position:relative;font-size:19px;font-weight:500;color:var(--c-primary-deep);letter-spacing:1px;background:var(--c-bg);padding:0 4px}
-.hz-big{font-size:96px;font-weight:600;line-height:1;color:var(--c-text)}
-.tz{
-  width:186px;height:186px;margin:16px auto 0;background:#fff;border:1.5px solid #E0A8A0;
-  border-radius:6px;position:relative;display:grid;place-items:center;
-}
-.tz::before,.tz::after{content:"";position:absolute;border-color:#E0A8A0;border-style:dashed}
+/* 书写区：拼音 / 田字格 / 笔顺分解 收进一个面板，紧凑、成组 */
+.write-panel{background:#fff;border:1px solid var(--c-line-soft);border-radius:16px;
+  padding:10px 12px 12px;box-shadow:var(--sh-sm);display:flex;flex-direction:column;align-items:center}
+.wp-top{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.wp-tag{font-size:11px;color:var(--c-text-3)}
+
+.tz{width:166px;height:166px;background:#FFFDFA;border:1.5px solid var(--c-grid);border-radius:5px;
+  position:relative;display:grid;place-items:center;flex:none}
+.tz::before,.tz::after{content:"";position:absolute;border-color:var(--c-grid);border-style:dashed;opacity:.65}
 .tz::before{left:0;right:0;top:50%;border-width:0 0 1px 0}
 .tz::after{top:0;bottom:0;left:50%;border-width:0 1px 0 0}
-.tz .ghost{font-size:132px;font-weight:400;color:#EFE8DC;line-height:1}
-.meta3{display:flex;gap:0;margin:18px 0 4px;background:#fff;border:1px solid var(--c-line-soft);border-radius:14px;overflow:hidden;box-shadow:var(--sh-sm)}
-.meta3 .m{flex:1;padding:11px 0;text-align:center}
+.tz .zi{font-family:var(--kai);font-size:126px;font-weight:400;line-height:1;color:var(--c-text);
+  position:relative;z-index:1}
+.tz .ghost{font-family:var(--kai);font-size:126px;font-weight:400;line-height:1;color:#EFE8DC;position:relative;z-index:1}
+
+/* 笔顺分解：逐笔累加，紧贴动画下方，同宽对齐 */
+.strokes{display:flex;gap:5px;margin-top:9px;width:166px}
+.strokes .st{flex:1;aspect-ratio:1;background:#FFFDFA;border:1px solid var(--c-line);
+  border-radius:3px;display:grid;place-items:center;position:relative}
+.strokes .st .zi{font-family:var(--kai);font-size:34px;line-height:1;color:#5C574F}
+.strokes .st .n{position:absolute;right:3px;top:2px;font-size:8.5px;color:#B6AC9E;line-height:1}
+.strokes .st.play{border-color:var(--c-primary);border-style:dashed;color:var(--c-primary)}
+.strokes .st.play .zi{color:var(--c-primary)}
+.wp-foot{display:flex;align-items:center;gap:10px;margin-top:8px}
+.wp-foot .hint{font-size:11px;color:var(--c-text-3)}
+
+/* meta 三栏 */
+.meta3{display:flex;margin:10px 0 0;background:#fff;border:1px solid var(--c-line-soft);
+  border-radius:12px;overflow:hidden;box-shadow:var(--sh-sm)}
+.meta3 .m{flex:1;padding:8px 0;text-align:center}
 .meta3 .m+.m{border-left:1px solid var(--c-line-soft)}
-.meta3 .k{font-size:10.5px;color:var(--c-text-3);letter-spacing:.5px}
-.meta3 .v{font-size:14px;font-weight:600;margin-top:2px}
-.block-t{font-size:13px;font-weight:600;color:var(--c-text-2);margin:18px 0 9px;display:flex;align-items:center;gap:6px}
-.block-t::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--c-primary)}
-.words{display:flex;flex-wrap:wrap;gap:8px}
-.word{
-  display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--c-line-soft);
-  border-radius:12px;padding:8px 12px;font-size:15px;font-weight:600;box-shadow:var(--sh-sm);
-}
-.word .spk{font-size:12px;color:var(--c-primary);opacity:.8}
+.meta3 .k{font-size:10px;color:var(--c-text-3);letter-spacing:.5px}
+.meta3 .v{font-family:var(--kai);font-size:15px;font-weight:400;margin-top:1px}
+
+.block-t{font-size:12.5px;font-weight:600;color:var(--c-text-2);margin:12px 0 7px;
+  display:flex;align-items:center;gap:6px}
+.block-t::before{content:"";width:3px;height:11px;border-radius:2px;background:var(--c-primary)}
+.block-t .more{margin-left:auto;font-size:11px;font-weight:400;color:var(--c-text-3)}
+.words{display:flex;flex-wrap:wrap;gap:6px}
+.word{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--c-line-soft);
+  border-radius:10px;padding:6px 10px;font-family:var(--kai);font-size:15px;box-shadow:var(--sh-sm)}
 
 /* 按钮 */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;border-radius:999px;font-family:var(--font);font-weight:600;cursor:pointer}
-.btn-p{height:48px;padding:0 26px;background:var(--c-primary);color:#fff;font-size:16px;box-shadow:0 2px 8px rgba(217,79,61,.24);transition:transform .18s var(--ease),background .18s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:999px;
+  font-family:var(--font);font-weight:600;cursor:pointer}
+.btn-p{height:44px;padding:0 24px;background:var(--c-primary);color:#fff;font-size:15.5px;
+  box-shadow:0 2px 8px rgba(217,79,61,.24);transition:transform .18s var(--ease),background .18s}
 .btn-p:active{background:var(--c-primary-deep);transform:scale(.96)}
-.btn-s{height:48px;padding:0 26px;background:#fff;color:var(--c-primary);border:1.5px solid #F3C9C2;font-size:16px}
-.btn-g{height:40px;padding:0 16px;background:transparent;color:var(--c-text-2);font-size:15px;border-radius:12px}
-.btn-r{height:48px;padding:0 26px;background:linear-gradient(180deg,#F7C553,#F2B230);color:#6B4708;font-size:16px;font-weight:700;box-shadow:var(--sh-gold)}
+.btn-s{height:44px;padding:0 20px;background:#fff;color:var(--c-primary);border:1.5px solid #F3C9C2;font-size:15px}
+.btn-g{height:36px;padding:0 14px;background:transparent;color:var(--c-text-2);font-size:14px;border-radius:10px}
+.btn-r{height:44px;padding:0 24px;background:linear-gradient(180deg,#F7C553,#F2B230);color:#6B4708;
+  font-size:15.5px;font-weight:700;box-shadow:var(--sh-gold)}
 .btn-full{width:100%}
-
-/* 标签 */
-.tag{height:24px;padding:0 10px;border-radius:8px;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
-.tag-multi{background:var(--c-primary-light);color:var(--c-primary-deep)}
-.tag-lesson{background:var(--c-line-soft);color:var(--c-text-3)}
-.tag-new{background:var(--c-success-light);color:#3E7F6C}
-.pill{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--c-line);border-radius:999px;padding:7px 14px;font-size:13px}
+.btn-row{display:flex;gap:8px;margin-top:8px}
 
 /* ---------- 平板详情 ---------- */
-.tpad{display:flex;height:100%;padding:0 40px 40px;gap:32px}
-.tpad .left{width:40%;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.tpad .right{width:60%;padding-top:26px}
-.tpad .hz-big{font-size:140px}
-.tpad .tz{width:300px;height:300px}
-.tpad .tz .ghost{font-size:214px}
-.tpad .words{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tpad{display:flex;height:100%;padding:0 32px 32px;gap:28px}
+.tpad .left{width:44%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px}
+.tpad .right{width:56%;padding-top:6px}
+.tpad .write-panel{width:100%}
+.tpad .tz{width:268px;height:268px}
+.tpad .tz .zi{font-size:204px}
+.tpad .strokes{width:268px;gap:8px}
+.tpad .strokes .st .zi{font-size:52px}
+.tpad .pg.lg{height:52px}
+.tpad .pg.lg i{font-size:32px;line-height:50px;top:-2.8px}
+.tpad .meta3 .v{font-size:19px}
+.tpad .words{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tpad .word{justify-content:space-between}
 
 /* ---------- 激励 ---------- */
-.panel{background:#fff;border:1px solid var(--c-line-soft);border-radius:20px;padding:24px;box-shadow:var(--sh-sm)}
+.panel{background:#fff;border:1px solid var(--c-line-soft);border-radius:18px;padding:22px;box-shadow:var(--sh-sm)}
 .panel+.panel{margin-top:16px}
-.panel h3{font-size:15px;font-weight:600;margin-bottom:4px}
-.panel .sub{font-size:12.5px;color:var(--c-text-3);margin-bottom:16px}
+.panel h3{font-size:15px;font-weight:600;margin-bottom:3px}
+.panel .sub{font-size:12.5px;color:var(--c-text-3);margin-bottom:15px}
 .row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
-
-.star{filter:drop-shadow(0 3px 8px rgba(242,178,48,.45))}
 .star-fly{animation:fly 2.8s var(--ease) infinite}
 @keyframes fly{
   0%{transform:translate(0,0) rotate(0deg) scale(.4);opacity:0}
   18%{transform:translate(0,-6px) rotate(-10deg) scale(1.15);opacity:1}
-  70%{transform:translate(38px,-52px) rotate(14deg) scale(.9);opacity:1}
-  100%{transform:translate(58px,-78px) rotate(20deg) scale(.5);opacity:0}
+  70%{transform:translate(34px,-46px) rotate(14deg) scale(.9);opacity:1}
+  100%{transform:translate(52px,-70px) rotate(20deg) scale(.5);opacity:0}
 }
-
-.seals{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
-.seal{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;position:relative;font-size:19px;font-weight:700}
-.seal.on{
-  background:var(--c-primary);color:#fff;border:2px solid var(--c-primary-deep);
-  box-shadow:0 3px 10px rgba(217,79,61,.28);transform:rotate(-4deg);
-}
+.seals{display:grid;grid-template-columns:repeat(6,1fr);gap:11px}
+.seal{aspect-ratio:1;border-radius:11px;display:grid;place-items:center;position:relative;
+  font-family:var(--kai);font-size:20px;font-weight:700}
+.seal.on{background:var(--c-primary);color:#fff;border:2px solid var(--c-primary-deep);
+  box-shadow:0 3px 10px rgba(217,79,61,.28);transform:rotate(-4deg)}
 .seal.off{border:2px dashed var(--c-line);color:#D6CEC1;background:#FCFAF6;font-size:15px;font-weight:500}
-.seal-lbl{font-size:10px;color:var(--c-text-3);text-align:center;margin-top:6px}
-
-.levels{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.lv{border-radius:14px;padding:14px 8px;text-align:center;border:1px solid var(--c-line-soft);background:#FCFAF6}
+.seal-lbl{font-size:10px;color:var(--c-text-3);text-align:center;margin-top:5px}
+.levels{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}
+.lv{border-radius:13px;padding:13px 6px;text-align:center;border:1px solid var(--c-line-soft);background:#FCFAF6}
 .lv.on{background:#fff;box-shadow:var(--sh-md);border-color:transparent}
-.lv .badge{
-  width:44px;height:44px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;
-  font-size:13px;font-weight:700;color:#fff;
-}
+.lv .badge{width:42px;height:42px;border-radius:50%;margin:0 auto 7px;display:grid;place-items:center;
+  font-family:var(--kai);font-size:15px;font-weight:700;color:#fff}
 .lv .nm{font-size:12.5px;font-weight:600}
-.lv .cg{font-size:10.5px;color:var(--c-text-3);margin-top:2px}
-
-/* 进度条 */
-.bar{height:8px;border-radius:999px;background:var(--c-line-soft);overflow:hidden}
+.lv .cg{font-size:10.5px;color:var(--c-text-3);margin-top:1px}
+.bar{height:7px;border-radius:999px;background:var(--c-line-soft);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--c-primary),var(--c-gold))}
+
+/* 标签 */
+.tag{height:23px;padding:0 9px;border-radius:7px;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.tag-multi{background:var(--c-primary-light);color:var(--c-primary-deep)}
+.tag-lesson{background:var(--c-line-soft);color:var(--c-text-3)}
+.tag-new{background:var(--c-success-light);color:#3E7F6C}
+.pill{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--c-line);
+  border-radius:999px;padding:6px 13px;font-size:13px}
 
 /* 组件陈列 */
 .comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 .comp-card{background:#fff;border:1px solid var(--c-line-soft);border-radius:16px;padding:18px;box-shadow:var(--sh-sm)}
 .comp-card .lbl{font-size:11.5px;color:var(--c-text-3);letter-spacing:.6px;margin-bottom:12px;font-weight:600}
 .comp-card .stack{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
-.fake-input{width:100%;height:46px;border:1.5px solid var(--c-line);border-radius:14px;display:flex;align-items:center;padding:0 14px;font-size:14px;color:#B8B0A4;background:#fff}
+.fake-input{width:100%;height:44px;border:1.5px solid var(--c-line);border-radius:12px;display:flex;align-items:center;
+  padding:0 14px;font-size:14px;color:#B8B0A4;background:#fff}
 .fake-input.focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(217,79,61,.10);color:var(--c-text)}
 
 /* 说明条 */
-.callout{
-  display:flex;gap:12px;background:var(--c-warn-light);border-radius:14px;padding:14px 16px;
-  font-size:13.5px;color:#7A5A1E;line-height:1.7;margin-top:16px;
-}
+.callout{display:flex;gap:12px;background:var(--c-warn-light);border-radius:14px;padding:14px 16px;
+  font-size:13.5px;color:#7A5A1E;line-height:1.75;margin-top:14px}
 .callout b{color:#5E4413}
-.callout .ic{flex:none;font-size:16px;line-height:1.4}
-
+.callout .ic{flex:none;font-size:15px;line-height:1.5}
 .dont{background:var(--c-primary-wash);color:#8C3A2C}
 .dont b{color:#7A2E22}
+.info{background:#EFF4F8;color:#2E4A5E}
+.info b{color:#1F3543}
+.ok{background:var(--c-success-light);color:#2F6B5A}
+.ok b{color:#215245}
 
-/* 图例 */
-.legend{display:flex;gap:22px;flex-wrap:wrap;font-size:12.5px;color:var(--c-text-3);margin-top:14px}
+.legend{display:flex;gap:22px;flex-wrap:wrap;font-size:12.5px;color:var(--c-text-3);margin-top:16px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+
+table.cmp{width:100%;border-collapse:collapse;font-size:13px}
+table.cmp th,table.cmp td{border:1px solid var(--c-line);padding:8px 11px;text-align:left;vertical-align:top}
+table.cmp th{background:#FCFAF6;font-weight:600;font-size:12.5px}
+table.cmp td code{font-family:ui-monospace,monospace;font-size:12px;color:var(--c-primary-deep)}
 
 @media (max-width:900px){
   body{padding:24px 16px 60px}
@@ -255,14 +294,19 @@ body{
 <div class="wrap">
 
   <div class="doc-head">
-    <div class="kicker">Design System · v1.00</div>
+    <div class="kicker">UI Design · v1.01</div>
     <h1>zika 字卡 · <em>纸上识字</em></h1>
-    <p>孩子打开不是进入软件，而是翻开一本自己的写字本——米宣纸的底、朱砂的印、墨黑的字。所有元素都从这三样东西长出来，不引入任何与书写无关的装饰。</p>
+    <p>v1.00 是「视觉语言探索稿」——只定了色板、质感、组件风格和激励机制，页面布局是占位性的，没按真实信息密度排。v1.01 是<b>正式 UI 稿</b>：列表页与详情页重新排版，汉字全部改用楷体，笔顺分解紧贴书写动画。</p>
     <div class="meta">
       <span class="tag tag-multi">儿童向 · 不幼稚</span>
       <span class="tag tag-new">纸墨中国风</span>
       <span class="tag tag-lesson">手机 375-430 · 平板 810-1080</span>
     </div>
+  </div>
+
+  <div class="callout ok">
+    <span class="ic">✓</span>
+    <div><b>v1.01 三处修订</b>　① 列表卡片加四线三格拼音 + 发音按钮，不进详情页就能听；② 详情页重排为「书写区面板」，拼音/田字格/笔顺分解成组，不再松散漂浮；③ 汉字全部改楷体——原版 Web 用的就是楷体，v1.00 我错改成黑体了。</div>
   </div>
 
   <!-- ========== 1 色彩 ========== -->
@@ -274,49 +318,75 @@ body{
     <div class="sw"><div class="chip" style="background:#F2B230"><span style="color:#6B4708">REWARD</span></div><div class="info"><b>奖励金</b><code>#F2B230</code></div></div>
     <div class="sw"><div class="chip" style="background:#FEF4DE"><span style="color:#D9941C">GOLD LT</span></div><div class="info"><b>金色浅底</b><code>#FEF4DE</code></div></div>
     <div class="sw"><div class="chip" style="background:#FDF9F3;border-bottom:1px solid #F5EFE5"><span style="color:#8A8378">PAPER</span></div><div class="info"><b>纸底</b><code>#FDF9F3</code></div></div>
-    <div class="sw"><div class="chip" style="background:#2B2B2B"><span style="color:#fff">INK</span></div><div class="info"><b>墨</b><code>#2B2B2B</code></div></div>
+    <div class="sw"><div class="chip" style="background:#2B2B2B"><span style="color:#fff">INK</span></div><div class="info"><b>墨（字）</b><code>#2B2B2B</code></div></div>
+    <div class="sw"><div class="chip" style="background:#E3B3AA"><span style="color:#8C3A2C">GRID</span></div><div class="info"><b>田字格线</b><code>#E3B3AA</code></div></div>
+    <div class="sw"><div class="chip" style="background:#B9C6D6"><span style="color:#2E4A5E">PY LINE</span></div><div class="info"><b>四线三格线</b><code>#B9C6D6</code></div></div>
     <div class="sw"><div class="chip" style="background:#8A8378"><span style="color:#fff">GRAY</span></div><div class="info"><b>辅助灰</b><code>#8A8378</code></div></div>
     <div class="sw"><div class="chip" style="background:#57A88F"><span style="color:#fff">SUCCESS</span></div><div class="info"><b>竹青·成功</b><code>#57A88F</code></div></div>
     <div class="sw"><div class="chip" style="background:#E8A33D"><span style="color:#fff">WARN</span></div><div class="info"><b>杏橙·答错</b><code>#E8A33D</code></div></div>
   </div>
   <div class="callout">
     <span class="ic">◆</span>
-    <div><b>朱砂全局占比 ≤ 10%</b>，只出现在该被点的地方（选中 / 主操作 / 奖励印记）。<b>金色只属激励</b>，学习界面出现金色 = 有收获，形成条件反射。<b>答错永远用杏橙不用红</b>——红色留给印记与正向，不给孩子制造焦虑。</div>
+    <div><b>朱砂全局占比 ≤ 10%</b>，只出现在该被点的地方。<b>金色只属激励</b>，学习界面出现金色 = 有收获。<b>答错永远用杏橙不用红</b>。<b>新增两条格子线色</b>：田字格用极淡的朱砂（<code>#E3B3AA</code>），四线三格用淡钢蓝（<code>#B9C6D6</code>）——课本配色，且灰度过高会看不清、过艳会抢字。</div>
   </div>
 
-  <!-- ========== 2 手机·列表 ========== -->
-  <div class="sec"><span class="num">2</span><h2>手机 · 字卡列表</h2><span class="note">一屏一个焦点，卡片浮在纸面上</span></div>
+  <!-- ========== 2 列表 ========== -->
+  <div class="sec"><span class="num">2</span><h2>手机 · 字卡列表</h2><span class="note">每张卡：大字 / 四线三格拼音 + 发音 / 组词</span></div>
   <div class="devices">
 
     <div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
-        <div class="navbar"><span class="title">一年级上册</span><span style="font-size:13px;color:#8A8378">切换 ▾</span></div>
+        <div class="navbar"><span class="title">一年级上册</span><span class="sub">识字 2 ▾</span></div>
 
         <div class="body-scroll">
           <div class="overview">
             <div class="ring"><b>32%</b></div>
             <div class="ov-txt">
               <div class="l1">本册已学 32 / 100 字</div>
-              <div class="l2">再学 68 字就能集齐这枚印章</div>
+              <div class="l2">再学 68 字集齐这枚印章</div>
             </div>
             <div class="streak">🔥 5</div>
           </div>
 
           <div class="lesson-head"><span class="ln">识字 2</span><span class="cnt">4 字 · 今日</span></div>
-          <div class="grid" style="margin-bottom:18px">
-            <div class="cchar learned"><span class="zi">一</span><span class="py">yī</span></div>
-            <div class="cchar learned"><span class="zi">二</span><span class="py">èr</span></div>
-            <div class="cchar"><span class="zi">三</span><span class="py">sān</span></div>
-            <div class="cchar"><span class="zi">上</span><span class="py">shàng</span></div>
+          <div class="grid" style="margin-bottom:14px">
+            <div class="cc"><span class="newf">新</span><span class="zi">一</span>
+              <div class="pyrow"><span class="pg sm"><i>yī</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>一起</span><span>一天</span></div>
+            </div>
+            <div class="cc"><span class="newf">新</span><span class="zi">二</span>
+              <div class="pyrow"><span class="pg sm"><i>èr</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>二月</span><span>二十</span></div>
+            </div>
+            <div class="cc"><span class="zi">三</span>
+              <div class="pyrow"><span class="pg sm"><i>sān</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>三月</span><span>三个</span></div>
+            </div>
+            <div class="cc"><span class="zi">上</span>
+              <div class="pyrow"><span class="pg sm"><i>shàng</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>上学</span><span>上面</span></div>
+            </div>
           </div>
 
           <div class="lesson-head"><span class="ln">识字 3</span><span class="cnt">4 字</span></div>
           <div class="grid">
-            <div class="cchar"><span class="zi">口</span><span class="py">kǒu</span></div>
-            <div class="cchar"><span class="zi">耳</span><span class="py">ěr</span></div>
-            <div class="cchar"><span class="zi">目</span><span class="py">mù</span></div>
-            <div class="cchar"><span class="zi">手</span><span class="py">shǒu</span></div>
+            <div class="cc"><span class="zi">口</span>
+              <div class="pyrow"><span class="pg sm"><i>kǒu</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>人口</span><span>开口</span></div>
+            </div>
+            <div class="cc"><span class="zi">耳</span>
+              <div class="pyrow"><span class="pg sm"><i>ěr</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>耳朵</span><span>木耳</span></div>
+            </div>
+            <div class="cc"><span class="zi">目</span>
+              <div class="pyrow"><span class="pg sm"><i>mù</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>目光</span><span>耳目</span></div>
+            </div>
+            <div class="cc"><span class="zi">手</span>
+              <div class="pyrow"><span class="pg sm"><i>shǒu</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>手心</span><span>双手</span></div>
+            </div>
           </div>
         </div>
 
@@ -327,22 +397,33 @@ body{
           <div class="tab"><span class="ico">◍</span>我的</div>
         </div>
       </div></div>
-      <div class="cap">375 × 748 · 手机列表</div>
+      <div class="cap">375 × 748 · 列表：点卡片进详情，点喇叭直接读音</div>
     </div>
 
-    <!-- ========== 3 手机·详情 ========== -->
+    <!-- ========== 3 详情 ========== -->
     <div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
-        <div class="navbar"><span class="back">‹</span><span class="title" style="font-size:15px;color:#8A8378">识字 3</span><span style="width:28px"></span></div>
+        <div class="navbar"><span class="back">‹</span><span class="title">识字 3</span><span class="sub">1 / 4</span></div>
 
         <div class="body-scroll">
-          <div class="hz-head">
-            <div class="four-line"><span>kǒu</span></div>
-            <div class="hz-big">口</div>
-          </div>
+          <div class="write-panel">
+            <div class="wp-top">
+              <span class="pg lg"><i>kǒu</i></span>
+              <span class="spk lg"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+            </div>
 
-          <div class="tz"><span class="ghost">口</span></div>
+            <div class="tz"><span class="zi">口</span></div>
+
+            <div class="strokes">
+              <div class="st"><span class="zi">丨</span><span class="n">1</span></div>
+              <div class="st"><span class="zi">冂</span><span class="n">2</span></div>
+              <div class="st play"><span class="zi">口</span><span class="n">3</span></div>
+            </div>
+            <div class="wp-foot">
+              <span class="hint">逐笔累加 · 点空格重放该笔</span>
+            </div>
+          </div>
 
           <div class="meta3">
             <div class="m"><div class="k">部首</div><div class="v">口</div></div>
@@ -350,93 +431,105 @@ body{
             <div class="m"><div class="k">笔画</div><div class="v">3</div></div>
           </div>
 
-          <div class="block-t">组词</div>
+          <div class="block-t">组词 <span class="more">全部 8 个 ›</span></div>
           <div class="words">
-            <div class="word">舱口 <span class="spk">🔊</span></div>
-            <div class="word">窗口 <span class="spk">🔊</span></div>
-            <div class="word">出口 <span class="spk">🔊</span></div>
+            <div class="word">人口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
+            <div class="word">开口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
+            <div class="word">门口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
           </div>
 
-          <div style="margin:20px 0 8px">
+          <div style="margin-top:12px">
             <button class="btn btn-p btn-full">学会啦 · +1 ⭐</button>
           </div>
-          <div style="display:flex;gap:10px">
-            <button class="btn btn-s" style="flex:1;height:44px;font-size:15px">笔顺</button>
-            <button class="btn btn-s" style="flex:1;height:44px;font-size:15px">生成练习</button>
+          <div class="btn-row">
+            <button class="btn btn-s" style="flex:1">生成练习</button>
+            <button class="btn btn-s" style="flex:1">加入生字本</button>
           </div>
         </div>
       </div></div>
-      <div class="cap">375 × 748 · 详情页（拼音在上，符合课本阅读顺序）</div>
+      <div class="cap">375 × 748 · 详情：书写区成组，笔顺分解紧贴田字格</div>
     </div>
 
   </div>
 
+  <div class="callout info">
+    <span class="ic">◆</span>
+    <div><b>为什么把拼音/田字格/笔顺分解收进一个面板</b>　v1.00 这三样是分开漂浮的：拼音格 96px、字 96px、田字格 186px，各自居中、各留一段空白，结果 2/3 屏只有「口 + kǒu」。收进面板后视觉成组、间距压到 8-10px，同样的屏高能多放下 meta、组词和两个操作按钮。<br>
+    <b>笔顺分解紧贴上方</b>：分解格的宽度和大田字格同为 166px，第 1、2、3 格横向对齐。孩子可以上下对看——「这一笔在整字里落在哪」和「这一笔单独写多长」。这是你提的对比需求。</div>
+  </div>
+
   <!-- ========== 4 平板 ========== -->
-  <div class="sec"><span class="num">3</span><h2>平板 · iPad 10.2" 分栏</h2><span class="note">810 × 1080 竖屏 · 左字右信息，容器 720 居中</span></div>
+  <div class="sec"><span class="num">3</span><h2>平板 · iPad 10.2" 分栏</h2><span class="note">810 × 1080 竖屏 · 左书写右信息</span></div>
   <div class="stage">
     <div>
-      <div class="tablet"><div class="screen" style="transform:scale(.56);transform-origin:top left">
+      <div class="tablet"><div class="screen">
         <div class="statusbar" style="padding:0 32px;height:54px"><span>9:41</span><span>●●● ▮</span></div>
-        <div class="navbar" style="height:56px;padding:0 40px">
-          <span class="back" style="font-size:24px">‹</span>
-          <span class="title" style="font-size:19px">一年级上册 · 识字 3</span>
-          <span class="tag tag-multi">多音字</span>
+        <div class="navbar" style="height:52px;padding:0 34px">
+          <span class="back" style="font-size:22px">‹</span>
+          <span class="title" style="font-size:18px">一年级上册 · 识字 3</span>
+          <span class="tag tag-multi">1 / 4</span>
         </div>
         <div class="tpad">
           <div class="left">
-            <div class="four-line" style="width:130px;height:40px"><span style="font-size:24px">kǒu</span></div>
-            <div class="hz-big">口</div>
-            <div class="tz"><span class="ghost">口</span></div>
+            <div class="write-panel">
+              <div class="wp-top" style="margin-bottom:10px">
+                <span class="pg lg"><i>kǒu</i></span>
+                <span class="spk lg"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+                <span class="wp-tag" style="font-size:13px">3 画</span>
+              </div>
+              <div class="tz"><span class="zi">口</span></div>
+              <div class="strokes">
+                <div class="st"><span class="zi">丨</span><span class="n">1</span></div>
+                <div class="st"><span class="zi">冂</span><span class="n">2</span></div>
+                <div class="st play"><span class="zi">口</span><span class="n">3</span></div>
+              </div>
+              <div class="wp-foot"><span class="hint" style="font-size:13px">逐笔累加 · 点空格重放该笔</span></div>
+            </div>
           </div>
           <div class="right">
             <div class="meta3" style="margin-top:0">
-              <div class="m"><div class="k">部首</div><div class="v">口</div></div>
-              <div class="m"><div class="k">结构</div><div class="v">独体结构</div></div>
-              <div class="m"><div class="k">笔画</div><div class="v">3 画</div></div>
+              <div class="m"><div class="k" style="font-size:12px">部首</div><div class="v">口</div></div>
+              <div class="m"><div class="k" style="font-size:12px">结构</div><div class="v">独体</div></div>
+              <div class="m"><div class="k" style="font-size:12px">笔画</div><div class="v">3</div></div>
             </div>
-            <div class="block-t">组词</div>
+            <div class="block-t" style="font-size:14px;margin-top:20px">组词</div>
             <div class="words">
-              <div class="word">舱口 <span class="spk">🔊</span></div>
-              <div class="word">窗口 <span class="spk">🔊</span></div>
-              <div class="word">出口 <span class="spk">🔊</span></div>
-              <div class="word">门口 <span class="spk">🔊</span></div>
+              <div class="word">人口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
+              <div class="word">开口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
+              <div class="word">门口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
+              <div class="word">出口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
             </div>
-            <div class="block-t">笔画分解</div>
-            <div style="display:flex;gap:12px">
-              <div class="tz" style="width:96px;height:96px;margin:0;border-radius:4px"><span class="ghost" style="font-size:68px;color:#8A8378">丨</span></div>
-              <div class="tz" style="width:96px;height:96px;margin:0;border-radius:4px"><span class="ghost" style="font-size:68px;color:#8A8378">𠃍</span></div>
-              <div class="tz" style="width:96px;height:96px;margin:0;border-radius:4px"><span class="ghost" style="font-size:68px;color:#8A8378">一</span></div>
-            </div>
-            <div style="display:flex;gap:12px;margin-top:24px">
-              <button class="btn btn-p" style="height:52px;font-size:17px">学会啦 · +1 ⭐</button>
-              <button class="btn btn-s" style="height:52px;font-size:17px">听写</button>
+            <div class="block-t" style="font-size:14px;margin-top:22px">释义</div>
+            <div style="font-size:14.5px;line-height:1.7;color:var(--c-text-2)">嘴，人和动物吃东西、发声的器官。</div>
+            <div style="display:flex;gap:10px;margin-top:26px">
+              <button class="btn btn-p" style="height:50px;font-size:16px">学会啦 · +1 ⭐</button>
+              <button class="btn btn-s" style="height:50px;font-size:16px">听写</button>
             </div>
           </div>
         </div>
       </div></div>
-      <div class="cap">810 × 1080 · 平板分栏（元素尺寸与手机一致，只是排更多）</div>
+      <div class="cap" style="max-width:486px">810 × 1080 · 平板分栏：左 44% 书写区，右 56% 信息</div>
     </div>
 
-    <!-- ========== 5 激励 ========== -->
-    <div style="flex:1;min-width:320px">
+    <div style="flex:1;min-width:300px">
       <div class="panel">
         <h3>即时激励 · 得星</h3>
         <div class="sub">学会一个新字 +1 / 听写全对 +5 / 完成练习 +3</div>
-        <div class="row" style="align-items:center;gap:30px">
-          <div style="position:relative;width:96px;height:96px;display:grid;place-items:center">
-            <span style="font-size:52px;font-weight:600;color:#2B2B2B">口</span>
-            <svg class="star star-fly" width="34" height="34" viewBox="0 0 24 24" style="position:absolute;left:52px;top:6px">
+        <div class="row">
+          <div style="position:relative;width:88px;height:88px;display:grid;place-items:center">
+            <span style="font-family:var(--kai);font-size:58px;line-height:1;color:#2B2B2B">口</span>
+            <svg class="star-fly" width="30" height="30" viewBox="0 0 24 24" style="position:absolute;left:50px;top:8px">
               <path d="M12 2.6l2.9 6.05 6.6.9-4.8 4.65 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6L2.5 9.55l6.6-.9z"
                 fill="#F2B230" stroke="#D9941C" stroke-width="1.1" stroke-linejoin="round"/>
             </svg>
           </div>
-          <div style="flex:1;min-width:180px">
-            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
-              <span style="font-size:30px;font-weight:700;color:#D9941C;font-variant-numeric:tabular-nums">128</span>
+          <div style="flex:1;min-width:150px">
+            <div style="display:flex;align-items:baseline;gap:7px;margin-bottom:8px">
+              <span style="font-size:28px;font-weight:700;color:#D9941C;font-variant-numeric:tabular-nums">128</span>
               <span style="font-size:12.5px;color:#8A8378">颗星</span>
             </div>
             <div class="bar"><i style="width:64%"></i></div>
-            <div style="font-size:11.5px;color:#8A8378;margin-top:7px">距小秀才还差 72 字</div>
+            <div style="font-size:11.5px;color:#8A8378;margin-top:6px">距小秀才还差 72 字</div>
           </div>
         </div>
       </div>
@@ -456,8 +549,8 @@ body{
     </div>
   </div>
 
-  <!-- ========== 6 等级 ========== -->
-  <div class="sec"><span class="num">4</span><h2>等级阶梯 · 长期激励</h2><span class="note">科举制称号，贴合识字主题；无排行榜、无降级</span></div>
+  <!-- ========== 5 等级 ========== -->
+  <div class="sec"><span class="num">4</span><h2>等级阶梯 · 长期激励</h2><span class="note">科举制称号 · 无排行榜 · 无降级</span></div>
   <div class="panel">
     <div class="levels">
       <div class="lv on"><div class="badge" style="background:#8A8378">蒙</div><div class="nm">蒙童</div><div class="cg">0 字</div></div>
@@ -467,34 +560,114 @@ body{
       <div class="lv"><div class="badge" style="background:#D94F3D">进</div><div class="nm">小进士</div><div class="cg">1000 字</div></div>
       <div class="lv"><div class="badge" style="background:#B53A2B;box-shadow:0 0 0 3px #FEF4DE inset">状</div><div class="nm">小状元</div><div class="cg">2000 字</div></div>
     </div>
-    <div class="callout dont" style="margin-top:18px">
+    <div class="callout dont">
       <span class="ic">✕</span>
       <div><b>明确不做</b>：排行榜、好友对比、公开分享卡片、连续失败惩罚、倒计时压迫。只做正反馈——让孩子「想再来一次」，而不是「怕掉下去」。</div>
     </div>
   </div>
 
+  <!-- ========== 6 字体 ========== -->
+  <div class="sec"><span class="num">5</span><h2>字体：楷体是唯一正解，但要解决跨端</h2><span class="note">原版 Web 就是楷体，v1.00 改黑体是我错了</span></div>
+
+  <div class="panel">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:26px;align-items:start">
+      <div>
+        <div style="font-family:var(--kai);font-size:72px;line-height:1;color:#2B2B2B">永</div>
+        <div style="font-family:var(--kai);font-size:72px;line-height:1.1;color:#2B2B2B">口手春</div>
+        <div style="font-size:12px;color:#8A8378;margin-top:8px"><b>楷体（正确）</b><br>顿笔、收笔清楚，笔形与笔顺动画一致</div>
+      </div>
+      <div>
+        <div style="font-size:72px;line-height:1;color:#B8B0A4;font-weight:600">永</div>
+        <div style="font-size:72px;line-height:1.1;color:#B8B0A4;font-weight:600">口手春</div>
+        <div style="font-size:12px;color:#8A8378;margin-top:8px"><b>黑体（v1.00 用错）</b><br>无顿笔无收锋，笔画粗细齐平，孩子看不懂笔形</div>
+      </div>
+      <div>
+        <div style="font-size:15px;line-height:1.65;color:#2B2B2B">嘴，人和动物吃东西、发声的器官。</div>
+        <div style="font-family:var(--kai);font-size:15px;line-height:1.65;color:#2B2B2B;margin-top:8px">组词：人口、开口、门口</div>
+        <div style="font-size:12px;color:#8A8378;margin-top:8px"><b>正文 / 组词</b><br>正文黑体 15px；组词用楷体，与字一致</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="ic">◆</span>
+    <div><b>问题</b>：小程序不能外挂字体，iOS 有楷体、多数 Android 没有——直接写 <code>font-family:"KaiTi"</code> 会变成「iPhone 楷体、安卓黑体」，同一个字两端不一样，对识字是负面的。所以要主动把字体文件带进去。三条路线：</div>
+  </div>
+
+  <div class="panel" style="margin-top:14px">
+    <table class="cmp">
+      <tr><th style="width:60px">路线</th><th>做法</th><th style="width:150px">优点</th><th style="width:150px">代价</th><th style="width:80px">结论</th></tr>
+      <tr>
+        <td><b>A</b></td>
+        <td>系统楷体 + 黑体兜底<br><code>font-family:"KaiTi","Kaiti SC",…,sans-serif</code></td>
+        <td>零成本，立刻能写。原版 Web 就是这么上线的</td>
+        <td>安卓端实际是黑体，两端不一致</td>
+        <td>兜底用</td>
+      </tr>
+      <tr style="background:#FCFAF6">
+        <td><b>B</b></td>
+        <td>字体子集 + <code>wx.loadFontFace</code><br>只保留本库 2307 个字的 woff，约 600-900KB，放云存储，App 启动时加载一次全局生效</td>
+        <td>全端统一楷体；字体渲染是原生排版，列表滚动最流畅；<b>组词、释义、页眉都能一起用</b></td>
+        <td>首屏有几百毫秒字体空窗（可先显示系统字再切换）；需选一个可免费商用的楷体</td>
+        <td><b>推荐</b></td>
+      </tr>
+      <tr>
+        <td><b>C</b></td>
+        <td>canvas 逐字绘制<br>用 hanzi-writer-data 的笔画路径直接画</td>
+        <td>与笔顺动画<b>完全同源</b>，字形最接近课本；不用任何字体文件</td>
+        <td>列表里多个 canvas，滚动性能与首屏渲染有风险；文字不能选中、不能用于页眉</td>
+        <td>只用于田字格/笔顺</td>
+      </tr>
+    </table>
+    <div class="callout ok" style="margin-top:16px">
+      <span class="ic">✓</span>
+      <div><b>我的建议：B 为主 + C 专用于田字格。</b>列表、详情大字、组词、释义全部走 B 的楷体；田字格与笔顺动画本来就必须 canvas，走 C。这样全站是楷体，且「写」的动画和「认」的字形都是楷体结构。<br><br>
+      <b>字体选型</b>：推荐 <b>文鼎 PL 楷（AR PL UKai）</b>——开源可商用（Arphic Public License，允许嵌入与子集化），而且 hanzi-writer 的汉字数据正是从这款楷体提取的，<b>与笔顺动画 100% 同源</b>，不会有「大字一个样、写起来另一个样」。备选霞鹜文楷（OFL，更秀气，但字形与笔顺数据不同源）。<br><br>
+      这一条需要你拍板：<b>选 AR PL UKai（与笔顺同源）还是霞鹜文楷（更好看）？</b>定了我在 P1 一起把字体子集脚本写出来。</div>
+    </div>
+  </div>
+
   <!-- ========== 7 组件 ========== -->
-  <div class="sec"><span class="num">5</span><h2>组件</h2><span class="note">字重只用 400 / 600 / 700，圆角 16，热区 ≥ 44</span></div>
+  <div class="sec"><span class="num">6</span><h2>组件</h2><span class="note">字重只用 400 / 600 / 700 · 圆角 14 · 热区 ≥ 44</span></div>
   <div class="comp-grid">
     <div class="comp-card">
       <div class="lbl">BUTTONS</div>
       <div class="stack">
-        <button class="btn btn-p">主要操作</button>
+        <button class="btn btn-p">学会啦 · +1 ⭐</button>
         <button class="btn btn-s">次级操作</button>
-        <button class="btn btn-r">⭐ 领取奖励</button>
+        <button class="btn btn-r">领取奖励</button>
         <button class="btn btn-g">文字操作</button>
         <button class="btn btn-p" style="background:#EDE6DA;color:#B8B0A4;box-shadow:none">禁用态</button>
       </div>
     </div>
     <div class="comp-card">
+      <div class="lbl">拼音 + 发音（两种尺寸）</div>
+      <div class="stack">
+        <div style="display:flex;align-items:center;gap:7px">
+          <span class="pg md"><i>chūn</i></span>
+          <span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <span class="pg sm"><i>lǜ</i></span>
+          <span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <span class="pg md"><i>háng</i></span><span class="py-sep">／</span>
+          <span class="pg md"><i>xíng</i></span>
+          <span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+        </div>
+        <div class="sub" style="font-size:11.5px;color:var(--c-text-3)">四线三格：上格放声调、中格放主字母、下格放下伸（g p y）</div>
+      </div>
+    </div>
+    <div class="comp-card">
       <div class="lbl">TAGS</div>
       <div class="stack">
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
           <span class="tag tag-multi">多音字</span>
-          <span class="tag tag-new">新课</span>
+          <span class="tag tag-new">新</span>
           <span class="tag tag-lesson">识字 3</span>
         </div>
-        <div class="pill" style="margin-top:6px">🔥 连续 5 天</div>
+        <div class="pill" style="margin-top:4px">🔥 连续 5 天</div>
         <div class="pill">📖 一年级上册</div>
       </div>
     </div>
@@ -505,37 +678,6 @@ body{
         <div class="fake-input focus">春</div>
       </div>
     </div>
-    <div class="comp-card">
-      <div class="lbl">PROGRESS</div>
-      <div class="stack" style="width:100%">
-        <div class="bar" style="width:100%"><i style="width:32%"></i></div>
-        <div class="bar" style="width:100%"><i style="width:64%"></i></div>
-        <div class="bar" style="width:100%"><i style="width:100%"></i></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== 8 字体 ========== -->
-  <div class="sec"><span class="num">6</span><h2>字体分工</h2><span class="note">黑体认字 · 楷体写字 · 正文说明</span></div>
-  <div class="panel">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px">
-      <div>
-        <div style="font-size:64px;font-weight:600;line-height:1;color:#2B2B2B">春</div>
-        <div style="font-size:12px;color:#8A8378;margin-top:10px">黑体 96px / 600 —— 列表与详情大字<br>保证 iOS / Android 两端一致</div>
-      </div>
-      <div>
-        <div class="tz" style="width:112px;height:112px;margin:0"><span class="ghost" style="font-size:80px">春</span></div>
-        <div style="font-size:12px;color:#8A8378;margin-top:10px">canvas 楷体 —— 笔顺 / 田字格<br>hanzi-writer-data 笔画路径，课本级准确</div>
-      </div>
-      <div>
-        <div style="font-size:15px;line-height:1.65;color:#2B2B2B">嘴，人与动物进食的器官，也是某些动物发声器官的一部分。</div>
-        <div style="font-size:12px;color:#8A8378;margin-top:10px">正文 15px / 1.65 —— 释义、组词、说明</div>
-      </div>
-    </div>
-    <div class="callout" style="background:#F7F2E9;color:#5C574F">
-      <span class="ic">◆</span>
-      <div><b>为什么不用楷体做大字</b>：小程序不能外挂字体，Android 端不保证有楷体，混用会造成两端字形不一致——对识字教学反而有害。楷体的正确落点是<b>笔顺与田字格</b>，那里用笔画路径绘制，天然是课本字形。</div>
-    </div>
   </div>
 
   <div class="legend">
@@ -543,7 +685,8 @@ body{
     <span><i style="background:#F2B230"></i>奖励金（仅激励）</span>
     <span><i style="background:#57A88F"></i>成功/已学</span>
     <span><i style="background:#E8A33D"></i>答错提示（非红）</span>
-    <span><i style="background:#FDF9F3;border:1px solid #EDE6DA"></i>纸底</span>
+    <span><i style="background:#E3B3AA"></i>田字格线</span>
+    <span><i style="background:#B9C6D6"></i>四线三格线</span>
   </div>
 
 </div>

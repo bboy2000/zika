@@ -1,5 +1,5 @@
 /**
- * zika 全局样式变量 —— 与 DESIGN.md v1.00 一一对应
+ * zika 全局样式变量 —— 与 DESIGN.md v1.01 一一对应
  * 用法：页面 <style lang="scss"> 里 @import '@/uni.scss' 后直接用 $zk-*
  * 规则：页面禁止硬编码色值，一律引用变量
  */
@@ -23,6 +23,18 @@ $zk-text-2: #5C574F;
 $zk-sub: #8A8378;
 $zk-line: #EDE6DA;
 $zk-line-soft: #F5EFE5;
+
+/* 格线（两种格必须两种色，否则糊成一块） */
+$zk-grid: #E3B3AA;     /* 田字格：极淡朱砂 */
+$zk-py-line: #B9C6D6;  /* 四线三格：淡钢蓝 */
+
+/* 字体
+   汉字必须楷体——生字用黑体是识字教学上的硬错（无顿笔无收锋，对不上笔顺）
+   zika-kai 由 wx.loadFontFace 注入，未加载时回落系统楷体，再回落衬线 */
+$zk-font-hanzi: "zika-kai", "Kaiti SC", "STKaiti", "KaiTi", "楷体", serif;
+$zk-font-ui: "PingFang SC", "HarmonyOS Sans SC", "Source Han Sans SC",
+             "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+$zk-font-py: Arial, Helvetica, "Helvetica Neue", sans-serif;
 
 /* 语义（答错用 warn，不用红） */
 $zk-success: #57A88F;
@@ -53,12 +65,17 @@ $zk-sh-lg: 0 8px 24px rgba(43, 43, 43, .10), 0 2px 6px rgba(43, 43, 43, .05);
 $zk-sh-gold: 0 4px 14px rgba(242, 178, 48, .32);
 
 /* 字号（全部 px，不随屏缩放） */
-$zk-fs-hero: 96px;
+$zk-fs-hanzi-card: 52px;   /* 列表卡片汉字（楷体 400，不加重） */
 $zk-fs-display: 22px;
 $zk-fs-title: 17px;
 $zk-fs-body: 15px;
 $zk-fs-caption: 13px;
 $zk-fs-micro: 11px;
+
+/* 四线三格（三档，字号 = 格高/3 ÷ 0.519 使 x-height 填满中格） */
+$zk-pg-sm-h: 28px;  $zk-pg-sm-fs: 16.5px;  $zk-pg-sm-lh: 26px;  $zk-pg-sm-nudge: -1.4px;
+$zk-pg-md-h: 36px;  $zk-pg-md-fs: 21.5px;  $zk-pg-md-lh: 34px;  $zk-pg-md-nudge: -1.8px;
+$zk-pg-lg-h: 46px;  $zk-pg-lg-fs: 28px;    $zk-pg-lg-lh: 44px;  $zk-pg-lg-nudge: -2.4px;
 
 /* 动效 */
 $zk-ease: cubic-bezier(.34, 1.56, .64, 1);

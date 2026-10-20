@@ -1,9 +1,11 @@
 # zika 字卡小程序 · DESIGN.md
 
-> 版本：v1.00
+> 版本：v1.01
 > 日期：2026-10-20
 > 适用范围：微信小程序（手机 375-430px / 平板 iPad 10.2" 810-1080px）
-> 配套：zika小程序开发方案_v1.05.md
+> 配套：zika小程序开发方案_v1.05.md、design/preview.html（可视化稿）
+>
+> **v1.00 → v1.01**：①汉字字体由黑体改回楷体，新增 3.4 外挂路线；②四线三格给出唯一正确实现（四线≠三线、字号按 x-height 定、文字禁止加底色）；③明确汉字大字号不加重（楷体加粗会糊掉笔锋）；④新增格线色 `--c-py` / `--c-grid`。
 
 ---
 
@@ -65,6 +67,10 @@
 | Gray | `#8A8378` | `--c-text-3` | 辅助说明、占位符 |
 | Line | `#EDE6DA` | `--c-line` | 分割线、卡片描边 |
 | Line Soft | `#F5EFE5` | `--c-line-soft` | 内部分割 |
+| Grid 田字格线 | `#E3B3AA` | `--c-grid` | 田字格外框与虚线十字（极淡朱砂） |
+| Py Line 四线三格线 | `#B9C6D6` | `--c-py` | 拼音四线三格的 4 根线（淡钢蓝） |
+
+> **两种格线必须是两种颜色**：田字格用淡朱砂（属"纸上的印"），四线三格用淡钢蓝（属"课本体例"）。同色会让两个格子糊成一块。两色都不可再加深，否则抢字的注意力。
 
 ### 2.4 Semantic — 语义色
 
@@ -93,42 +99,102 @@
 ### 3.1 Font Family
 
 ```css
-/* 汉字展示 —— 小程序不能外挂字体，用系统黑体族 */
---font-hanzi: "PingFang SC", "HarmonyOS Sans SC", "Source Han Sans SC",
-              "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+/* 汉字（认字与写字）—— 楷体，字体文件随包外挂，见 3.3 */
+--font-hanzi: "zika-kai", "Kaiti SC", "STKaiti", "KaiTi", "楷体", serif;
 
-/* 正文 —— 同上，略降字重 */
---font-body: var(--font-hanzi);
+/* 正文 / UI —— 系统黑体族 */
+--font-ui: "PingFang SC", "HarmonyOS Sans SC", "Source Han Sans SC",
+           "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
 
-/* 数字 —— 用系统等宽数字特性 */
---font-num: -apple-system, "SF Pro Text", "DIN Alternate", sans-serif;
+/* 拼音 —— 必须字面清晰、声调符号完整 */
+--font-py: Arial, Helvetica, "Helvetica Neue", sans-serif;
+
+/* 数字 —— 等宽数字特性 */
 font-variant-numeric: tabular-nums;
 ```
 
-**为什么不用楷体**：识字课本用楷体是事实，但小程序无法保证 Android 端有楷体，混用会造成两端字形不一致——对识字教学反而有害。**楷体的正确落点是笔顺与田字格**：P4 的 canvas 用 hanzi-writer-data 的笔画路径绘制，那套数据本身就是楷体字形，课本级准确。列表与详情的大字用系统黑体，保证一致与可读。
+**汉字必须用楷体（v1.01 修正）**：v1.00 曾决定大字用黑体、楷体只用于 canvas 笔顺，理由是「Android 不保证有楷体」。这个理由只说明了「系统楷体不可靠」，结论却错了——**生字用黑体是识字教学上的硬错误**：黑体笔画粗细齐平、无顿笔无收锋，「口」在楷体里是竖—横折—横三笔有起收的笔画，在黑体里就是三根等宽线条，孩子看不出笔形，也对应不上笔顺动画。原版 Web 用的就是楷体（`.hanzi-font`），v1.00 是我改错了。
 
-**字体的三层分工**：
-1. **黑体大字**（纯色）—— 认字、看结构
-2. **canvas 楷体**（笔画路径）—— 笔顺、田字格占格、写字
-3. **正文黑体**（15px）—— 释义、组词、说明
+正确做法不是「退回黑体」，而是**把楷体字体文件带进小程序**（wx.loadFontFace + 子集化），见 3.3。
 
 ### 3.2 Type Scale
 
-| 层级 | Size | Weight | Line Height | Letter Spacing | 用途 |
-|---|---|---|---|---|---|
-| Hanzi Hero | 140px | 600 | 1 | 0 | 详情页主字（iPad 分栏左侧） |
-| Hanzi XL | 96px | 600 | 1 | 0 | 详情页主字（手机） |
-| Hanzi Card | 56px | 600 | 1.1 | 0 | 列表卡片字 |
-| Display | 22px | 700 | 1.35 | 0 | 页面主标题 |
-| Title | 17px | 600 | 1.4 | 0 | 区块标题、课名 |
-| Body | 15px | 400 | 1.65 | 0.2px | 正文、释义 |
-| Body Strong | 15px | 600 | 1.6 | 0.2px | 组词、强调项 |
-| Caption | 13px | 400 | 1.5 | 0.3px | 辅助说明、拼音标注 |
-| Micro | 11px | 400 | 1.4 | 0.4px | 版本号、角标 |
+| 层级 | Size | Weight | Line Height | 用途 |
+|---|---|---|---|---|
+| Hanzi Grid（田字格内） | 166px 格的 76% | 400 | 1 | 详情页书写区主字 |
+| Hanzi Card | 52px | 400 | 1.08 | 列表卡片字 |
+| Hanzi Inline | 15px | 400 | 1.6 | 组词、释义里的汉字 |
+| Display | 22px | 700 | 1.35 | 页面主标题 |
+| Title | 17px | 600 | 1.4 | 区块标题、课名 |
+| Body | 15px | 400 | 1.65 | 正文、释义 |
+| Body Strong | 15px | 600 | 1.6 | 强调项 |
+| Caption | 13px | 400 | 1.5 | 辅助说明 |
+| Micro | 11px | 400 | 1.4 | 版本号、角标 |
 
-**拼音专用**：拼音用 18px / 500，颜色 `--c-primary-deep`，与汉字上下对齐留 8px 间距。四线三格用 CSS 背景线绘制（三条 `--c-line` 细线），不占额外 DOM。
+**汉字不用 600/700 字重**：楷体加粗会被合成器「糊」掉笔锋，反而丢失楷体最重要的起收笔信息。大字一律 400。
 
-**排版哲学**：字重只用 400 / 600 / 700 三档，跨度大、层级清；字距几乎不加（中文加字距会散），只在 13px 以下微加 0.3-0.4px 防糊。
+**排版哲学**：字重只用 400 / 600 / 700 三档；中文不加字距（会散），只在 13px 以下微加 0.3-0.4px 防糊。
+
+### 3.3 四线三格（拼音格，唯一正确实现）
+
+四线三格是**四根线、三个格**，不是「三根线」——这是最常被写错的地方。
+
+```
+────────────  线1  ← 上格上沿（声调所在）
+   ˉ 声调
+────────────  线2  ← 上格下沿 / 中格上沿
+   k ǒ u      ← 中格：字母主体（x-height 应正好填满）
+────────────  线3  ← 中格下沿 / 下格上沿（拼音基线）
+   g p y      ← 下格：下伸部分
+────────────  线4  ← 下格下沿
+```
+
+实现要点（踩过的坑，别再踩）：
+
+```css
+.pg{
+  display:inline-flex; align-items:flex-start;
+  border-top:1px solid var(--c-py);      /* 线1 */
+  border-bottom:1px solid var(--c-py);   /* 线4 */
+  background-clip:padding-box;           /* 必须，否则分档偏移 1px */
+  background-image:linear-gradient(to bottom,
+    transparent 0, transparent calc(33.333% - .5px), var(--c-py) calc(33.333% - .5px),
+    var(--c-py) calc(33.333% + .5px), transparent calc(33.333% + .5px),
+    transparent calc(66.667% - .5px), var(--c-py) calc(66.667% - .5px),
+    var(--c-py) calc(66.667% + .5px), transparent calc(66.667% + .5px));
+}
+.pg i{ background:transparent; }         /* ← 关键：文字绝不能有底色 */
+```
+
+| 尺寸 | 格子高（含边框） | 字号 | i 的 line-height | top 微调 |
+|---|---|---|---|---|
+| sm（列表卡片） | 28px | 16.5px | 26px | -1.4px |
+| md（搜索/生词本） | 36px | 21.5px | 34px | -1.8px |
+| lg（详情页） | 46px | 28px | 44px | -2.4px |
+| lg（平板） | 52px | 32px | 50px | -2.8px |
+
+**三条铁律**：
+1. **文字不能有背景色**。v1.00 给拼音加了 `background:var(--c-bg)`，直接把格线盖出一圈空白——这是必须避免的错法。
+2. **字号按 x-height 定**：`字号 = 格高/3 ÷ 0.519`（Arial x-height 比例），这样中格刚好被字母填满，而不是飘在格子里。
+3. **基线压在线3**：用 `top` 微调，补偿字体行高的一半行距。
+
+**线色**：`--c-py: #B9C6D6`（淡钢蓝）。灰度太高会看不清、太艳会抢字，课本用的就是这个色域。田字格十字线用 `--c-grid: #E3B3AA`（极淡朱砂），与四线三格的蓝形成区分。
+
+### 3.4 字体外挂路线（待拍板）
+
+小程序不能直接读包内字体，必须有网络字体文件。三条路线：
+
+| 路线 | 做法 | 判定 |
+|---|---|---|
+| A 系统楷体兜底 | `font-family:"KaiTi","Kaiti SC",…,sans-serif` | 零成本，Android 端实际回落黑体，两端不一致。**只作兜底** |
+| **B 字体子集 + loadFontFace**（推荐） | 只保留本库 2307 字的 woff，约 600-900KB，放云存储，启动时 `wx.loadFontFace({global:true})` 加载一次 | 全端统一楷体；原生排版，列表滚动最流畅；组词/释义/页眉都能用 |
+| C canvas 逐字绘制 | 用 hanzi-writer-data 的笔画路径直接画 | 与笔顺动画完全同源；但列表多 canvas 有性能风险，且文字不能被排版使用。**只用于田字格/笔顺** |
+
+**推荐组合：B 为主 + C 专用于田字格。** 字体选型首选 **文鼎 PL 楷（AR PL UKai）**——开源可商用（Arphic Public License，明确允许嵌入与子集化），且 hanzi-writer 的汉字数据正出自这款楷体，**与笔顺动画 100% 同源**，不会出现「认的字」和「写的字」两个样子。备选霞鹜文楷（OFL，更秀气，但与笔顺数据不同源）。
+
+> 待用户拍板：AR PL UKai（同源）还是霞鹜文楷（更好看）。定了在 P1 一并产出子集化脚本。
+
+**排版哲学**：汉字与拼音是两套字体，不要混写在同一 run 里；拼音永远走 `--font-py`，汉字永远走 `--font-hanzi`。
 
 ---
 
