@@ -1,0 +1,8 @@
+# 小程序编译产物
+mp/dist/
+mp/unpackage/
+mp/.build.log
+
+node_modules/
+.DS_Store
+Thumbs.db

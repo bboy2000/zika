@@ -31,7 +31,9 @@
     "navigationBarBackgroundColor": "#FDF9F3",
     "backgroundColor": "#FDF9F3",
     "backgroundColorTop": "#FDF9F3",
-    "backgroundColorBottom": "#FDF9F3"
+    "backgroundColorBottom": "#FDF9F3",
+    "rpxCalcMaxDeviceWidth": 430,
+    "rpxCalcBaseDeviceWidth": 375
   },
   "tabBar": {
     "color": "#8A8378",
