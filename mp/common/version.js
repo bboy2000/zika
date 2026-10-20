@@ -2,7 +2,7 @@
  * 全局版本号：每次改动递增（P0 = v0.1.0，v0.1.1 = 数据层+双端配置）
  * 规则：改动提交信息与本文件版本号必须一致
  */
-export const APP_VERSION = 'v0.1.3'
+export const APP_VERSION = 'v0.1.4'
 
 /**
  * 设计令牌 —— 与 DESIGN.md v1.00 一一对应
@@ -45,6 +45,16 @@ export const MOTION = {
   fast: 160,
   base: 260,
   reward: 720
+}
+
+/**
+ * 详情弹层（DESIGN.md 5.5）
+ * 手机底部弹出、平板居中限宽，两端共用一套结构，不做左右分栏
+ */
+export const SHEET = {
+  mask: 'rgba(34,31,28,.42)',
+  phone: { radiusTop: 20, maxHeight: '94%', tz: 180 },
+  pad: { maxWidth: 560, radius: 24, maxHeight: '86%', tz: 250 }
 }
 
 /** 激励等级阶梯（累计字数达标晋级） */

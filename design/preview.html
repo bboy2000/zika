@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>zika 字卡 · UI 设计稿 v1.01</title>
+<title>zika 字卡 · UI 设计稿 v1.02</title>
 <style>
 :root{
   --c-primary:#D94F3D; --c-primary-deep:#B53A2B; --c-primary-light:#FBE7E3; --c-primary-wash:#FDF3F0;
@@ -83,25 +83,24 @@ body{
 .tabbar .tab.on{color:var(--c-primary);font-weight:600}
 .tabbar .ico{font-size:17px;line-height:1}
 
-/* ---------- 拼音四线三格（唯一正确实现） ----------
-   四线 = border-top + 2 条渐变线 + border-bottom
-   三格 = 上格(声调) / 中格(主字母) / 下格(下伸)
-   基线压在第 3 线上：bottom 微调 —— 文字绝不能有背景色，否则会盖掉格线 */
+/* ---------- 拼音四线三格（v1.02 修正：四条线一律 1px） ----------
+   旧实现 = border-top/bottom + 2 条渐变线。上下 border 是整像素对齐，很细；
+   中间两条渐变线落在 33.333%/66.667% 的亚像素位置，被抗锯齿摊成 1.5-2px 的
+   半透明带，看起来比边框粗一截 —— 这就是"中间两条线为什么这么粗"的原因。
+   现改为：四条线全部由背景层绘制，尺寸统一 1px、位置用 px 取整，
+   不再有渐变过渡边缘，四条线粗细完全一致。
+   配套：格高一律取 3 的倍数（27/36/45/51），线间距才是整数像素。 */
 .pg{display:inline-flex;align-items:flex-start;position:relative;padding:0 7px;border-radius:2px;
-  vertical-align:middle;border-top:1px solid var(--c-py);border-bottom:1px solid var(--c-py);
-  background-clip:padding-box;
-  background-image:linear-gradient(to bottom,
-    transparent 0, transparent calc(33.333% - .5px), var(--c-py) calc(33.333% - .5px),
-    var(--c-py) calc(33.333% + .5px), transparent calc(33.333% + .5px),
-    transparent calc(66.667% - .5px), var(--c-py) calc(66.667% - .5px),
-    var(--c-py) calc(66.667% + .5px), transparent calc(66.667% + .5px));
-}
+  vertical-align:middle;background-repeat:no-repeat;background-size:100% 1px;
+  background-image:linear-gradient(var(--c-py),var(--c-py)),linear-gradient(var(--c-py),var(--c-py)),
+    linear-gradient(var(--c-py),var(--c-py)),linear-gradient(var(--c-py),var(--c-py));
+  background-position:0 0,0 var(--l1),0 var(--l2),0 var(--l3)}
 /* i 必须无背景色，否则会盖掉格线；x-height 正好填满中格，基线压在第 3 线上 */
 .pg i{font-style:normal;font-family:var(--pyfont);font-weight:500;color:#2B2F36;
   white-space:nowrap;position:relative;letter-spacing:.2px}
-.pg.sm{height:28px} .pg.sm i{font-size:16.5px;line-height:26px;top:-1.4px}
-.pg.md{height:36px} .pg.md i{font-size:21.5px;line-height:34px;top:-1.8px}
-.pg.lg{height:46px} .pg.lg i{font-size:28px;line-height:44px;top:-2.4px}
+.pg.sm{height:27px;--l1:9px;--l2:18px;--l3:26px}   .pg.sm i{font-size:16.5px;line-height:26px;top:-1.3px}
+.pg.md{height:36px;--l1:12px;--l2:24px;--l3:35px}  .pg.md i{font-size:21.5px;line-height:34px;top:-0.3px}
+.pg.lg{height:45px;--l1:15px;--l2:30px;--l3:44px}  .pg.lg i{font-size:28px;line-height:44px;top:-1.4px}
 .py-sep{color:#B8B0A4;font-size:12px;margin:0 1px;font-family:var(--pyfont)}
 
 /* 发音按钮 */
@@ -144,6 +143,13 @@ body{
 .cc .newf{position:absolute;top:6px;left:7px;font-size:9px;font-weight:700;color:var(--c-primary);
   background:var(--c-primary-light);border-radius:4px;padding:0 4px;line-height:14px}
 
+/* 平板列表：4 列（auto-fill 自适应，屏幕更宽自动 5 列） */
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tgrid .cc{padding:14px 10px 12px;gap:7px;border-radius:16px}
+.tgrid .cc .zi{font-size:72px}
+.tgrid .cc .ws span{font-size:12.5px;line-height:20px;padding:0 8px}
+.tgrid .cc .newf{font-size:11px;line-height:17px;top:8px;left:9px}
+
 /* ---------- 详情页 ---------- */
 /* 书写区：拼音 / 田字格 / 笔顺分解 收进一个面板，紧凑、成组 */
 .write-panel{background:#fff;border:1px solid var(--c-line-soft);border-radius:16px;
@@ -151,7 +157,7 @@ body{
 .wp-top{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
 .wp-tag{font-size:11px;color:var(--c-text-3)}
 
-.tz{width:166px;height:166px;background:#FFFDFA;border:1.5px solid var(--c-grid);border-radius:5px;
+.tz{width:180px;height:180px;background:#FFFDFA;border:1.5px solid var(--c-grid);border-radius:5px;
   position:relative;display:grid;place-items:center;flex:none}
 .tz::before,.tz::after{content:"";position:absolute;border-color:var(--c-grid);border-style:dashed;opacity:.65}
 .tz::before{left:0;right:0;top:50%;border-width:0 0 1px 0}
@@ -161,7 +167,7 @@ body{
 .tz .ghost{font-family:var(--kai);font-size:126px;font-weight:400;line-height:1;color:#EFE8DC;position:relative;z-index:1}
 
 /* 笔顺分解：逐笔累加，紧贴动画下方，同宽对齐 */
-.strokes{display:flex;gap:5px;margin-top:9px;width:166px}
+.strokes{display:flex;gap:5px;margin-top:9px;width:180px}
 .strokes .st{flex:1;aspect-ratio:1;background:#FFFDFA;border:1px solid var(--c-line);
   border-radius:3px;display:grid;place-items:center;position:relative}
 .strokes .st .zi{font-family:var(--kai);font-size:34px;line-height:1;color:#5C574F}
@@ -200,20 +206,60 @@ body{
 .btn-full{width:100%}
 .btn-row{display:flex;gap:8px;margin-top:8px}
 
-/* ---------- 平板详情 ---------- */
-.tpad{display:flex;height:100%;padding:0 32px 32px;gap:28px}
-.tpad .left{width:44%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px}
-.tpad .right{width:56%;padding-top:6px}
-.tpad .write-panel{width:100%}
-.tpad .tz{width:268px;height:268px}
-.tpad .tz .zi{font-size:204px}
-.tpad .strokes{width:268px;gap:8px}
-.tpad .strokes .st .zi{font-size:52px}
-.tpad .pg.lg{height:52px}
-.tpad .pg.lg i{font-size:32px;line-height:50px;top:-2.8px}
-.tpad .meta3 .v{font-size:19px}
-.tpad .words{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.tpad .word{justify-content:space-between}
+/* ---------- 详情弹层（v1.02：整页详情 → 弹出式） ----------
+   手机：从底部弹出，上方两角圆角，占屏宽 100%
+   平板：居中弹出，四角圆角，限宽 560 —— 不用再拆左右两栏，一套内容两端通用 */
+.mask{position:absolute;inset:0;background:rgba(34,31,28,.42);z-index:20;
+  display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;border-radius:20px 20px 0 0;position:relative;overflow:hidden;
+  box-shadow:0 -10px 36px rgba(43,43,43,.20);display:flex;flex-direction:column;
+  max-height:94%;animation:sheetUp .3s var(--ease)}
+@keyframes sheetUp{from{transform:translateY(30px);opacity:.55}to{transform:none;opacity:1}}
+.sheet .close{position:absolute;right:12px;top:12px;width:29px;height:29px;border-radius:50%;
+  background:var(--c-primary);color:#fff;display:grid;place-items:center;font-size:15px;line-height:1;
+  box-shadow:0 2px 7px rgba(217,79,61,.32);z-index:2}
+/* 顶部一行：拼音+发音 ｜ 部首 ｜ 结构 ｜ 笔画 */
+.sheet-head{display:flex;align-items:center;gap:6px;padding:12px 57px 11px 15px;
+  border-bottom:1px solid var(--c-line-soft);flex:none}
+.sheet-head .kv{display:flex;align-items:baseline;gap:4px;line-height:1.2;white-space:nowrap}
+.sheet-head .kv .k{font-size:10.5px;color:var(--c-text-3);letter-spacing:.3px}
+.sheet-head .kv .v{font-family:var(--kai);font-size:14.5px;color:var(--c-text)}
+.sheet-head .sep{width:1px;height:24px;background:var(--c-line);flex:none}
+.sheet-body{padding:12px 15px 14px;overflow:auto;flex:1;min-height:0;display:flex;flex-direction:column;align-items:center}
+.sheet-foot{flex:none;display:flex;gap:8px;padding:9px 15px 12px;border-top:1px solid var(--c-line-soft);background:#fff}
+.sheet-foot .btn{flex:1;height:43px;font-size:14.5px;padding:0 8px;white-space:nowrap}
+.mask.center .sheet-foot{padding:11px 20px 14px}
+.mask.center .sheet-foot .btn{height:47px;font-size:15.5px;padding:0 14px}
+.sheet-pg{margin-bottom:6px}
+
+/* 弹层内书写区尺寸（手机） */
+.sheet .tz{width:180px;height:180px}
+.sheet .tz .zi,.sheet .tz .ghost{font-size:137px}
+.sheet .strokes{width:180px;gap:6px;margin-top:7px}
+.sheet .strokes .st .zi{font-size:35px}
+.sheet .sh-hint{font-size:11.5px;color:var(--c-text-3);margin:8px 0 9px;text-align:center}
+.sheet .sh-hint b{color:var(--c-text-2);font-weight:600}
+.sh-btns{display:flex;gap:8px;width:100%}
+.sh-btns .btn{flex:1;height:41px;font-size:13.5px;padding:0 6px;letter-spacing:-.2px}
+.sh-btns .btn-p{flex:1.24;font-size:14px}
+.sheet-sec{width:100%;margin-top:12px;padding-top:11px;border-top:1px solid var(--c-line-soft)}
+.sheet-sec .block-t{margin:0 0 8px}
+.sheet .words{justify-content:center;align-items:center}
+.sheet .more-w{font-size:11.5px;color:var(--c-text-3);padding:0 2px}
+.sheet .word{font-size:15px;padding:5px 9px;gap:4px}
+
+/* 平板：居中弹出，限宽 560，四角圆角 */
+.mask.center{align-items:center}
+.mask.center .sheet{max-width:560px;border-radius:24px;max-height:86%}
+.mask.center .sheet .tz{width:250px;height:250px}
+.mask.center .sheet .tz .zi,.mask.center .sheet .tz .ghost{font-size:190px}
+.mask.center .sheet .strokes{width:250px;gap:7px}
+.mask.center .sheet .strokes .st .zi{font-size:48px}
+.mask.center .sheet-head{padding:15px 52px 13px 20px}
+.mask.center .sheet-body{padding:14px 20px 18px}
+.mask.center .sheet .kv .v{font-size:16.5px}
+.mask.center .sh-btns .btn{height:45px;font-size:15px}
+.mask.center .sheet .word{font-size:17px;padding:6px 12px}
 
 /* ---------- 激励 ---------- */
 .panel{background:#fff;border:1px solid var(--c-line-soft);border-radius:18px;padding:22px;box-shadow:var(--sh-sm)}
@@ -294,9 +340,9 @@ table.cmp td code{font-family:ui-monospace,monospace;font-size:12px;color:var(--
 <div class="wrap">
 
   <div class="doc-head">
-    <div class="kicker">UI Design · v1.01</div>
+    <div class="kicker">UI Design · v1.02</div>
     <h1>zika 字卡 · <em>纸上识字</em></h1>
-    <p>v1.00 是「视觉语言探索稿」——只定了色板、质感、组件风格和激励机制，页面布局是占位性的，没按真实信息密度排。v1.01 是<b>正式 UI 稿</b>：列表页与详情页重新排版，汉字全部改用楷体，笔顺分解紧贴书写动画。</p>
+    <p>v1.00 定视觉语言，v1.01 排定列表与详情、汉字全面改楷体。v1.02 做了两处结构修正：<b>四线三格四条线统一 1px</b>（旧写法中间两条被抗锯齿摊粗），<b>详情页改回弹出式弹层</b>——手机从底部弹出、平板居中限宽，两端共用一套结构，不再为平板单独拆栏。</p>
     <div class="meta">
       <span class="tag tag-multi">儿童向 · 不幼稚</span>
       <span class="tag tag-new">纸墨中国风</span>
@@ -306,7 +352,9 @@ table.cmp td code{font-family:ui-monospace,monospace;font-size:12px;color:var(--
 
   <div class="callout ok">
     <span class="ic">✓</span>
-    <div><b>v1.01 三处修订</b>　① 列表卡片加四线三格拼音 + 发音按钮，不进详情页就能听；② 详情页重排为「书写区面板」，拼音/田字格/笔顺分解成组，不再松散漂浮；③ 汉字全部改楷体——原版 Web 用的就是楷体，v1.00 我错改成黑体了。</div>
+    <div><b>v1.02 两处修正</b>　① <b>四线三格</b>：旧写法用 border + 两条渐变线，渐变线落在 33.3%／66.7% 的亚像素位置被抗锯齿摊成 1.5-2px，所以中间两条明显比上下粗。现改为 4 层 1px 纯色背景线、位置写 px，格高取 3 的倍数（27/36/45）。<br>
+    ② <b>详情改弹层</b>：整页详情在手机上显得空、在平板上要拆两栏。改回弹层后手机底部滑出、关掉即回列表，平板同一份内容居中限宽 560——<b>一套结构两端通用</b>。底栏固定「学会啦」，内容区可滚动。<br>
+    <span style="color:var(--c-text-3)">v1.01 已定：列表卡带四线三格 + 发音钮、汉字全面楷体、笔顺分解紧贴田字格。</span></div>
   </div>
 
   <!-- ========== 1 色彩 ========== -->
@@ -400,66 +448,114 @@ table.cmp td code{font-family:ui-monospace,monospace;font-size:12px;color:var(--
       <div class="cap">375 × 748 · 列表：点卡片进详情，点喇叭直接读音</div>
     </div>
 
-    <!-- ========== 3 详情 ========== -->
+    <!-- ========== 3 详情（弹出式） ========== -->
     <div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
-        <div class="navbar"><span class="back">‹</span><span class="title">识字 3</span><span class="sub">1 / 4</span></div>
+        <div class="navbar"><span class="title">一年级上册</span><span class="sub">识字 3 ▾</span></div>
 
         <div class="body-scroll">
-          <div class="write-panel">
-            <div class="wp-top">
-              <span class="pg lg"><i>kǒu</i></span>
-              <span class="spk lg"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+          <div class="overview">
+            <div class="ring"><b>32%%</b></div>
+            <div class="ov-txt">
+              <div class="l1">本册已学 32 / 100 字</div>
+              <div class="l2">再学 68 字集齐这枚印章</div>
+            </div>
+            <div class="streak">🔥 5</div>
+          </div>
+          <div class="lesson-head"><span class="ln">识字 3</span><span class="cnt">4 字</span></div>
+          <div class="grid">
+            <div class="cc"><span class="zi">口</span>
+              <div class="pyrow"><span class="pg sm"><i>kǒu</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>人口</span><span>开口</span></div>
+            </div>
+            <div class="cc"><span class="zi">耳</span>
+              <div class="pyrow"><span class="pg sm"><i>ěr</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>耳朵</span><span>木耳</span></div>
+            </div>
+            <div class="cc"><span class="zi">目</span>
+              <div class="pyrow"><span class="pg sm"><i>mù</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>目光</span><span>耳目</span></div>
+            </div>
+            <div class="cc"><span class="zi">手</span>
+              <div class="pyrow"><span class="pg sm"><i>shǒu</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>手心</span><span>双手</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab on"><span class="ico">▤</span>字卡</div>
+          <div class="tab"><span class="ico">⌕</span>搜索</div>
+          <div class="tab"><span class="ico">☆</span>生字本</div>
+          <div class="tab"><span class="ico">◍</span>我的</div>
+        </div>
+
+        <!-- 详情弹层：点卡片从底部弹出，关掉回列表 -->
+        <div class="mask">
+          <div class="sheet">
+            <span class="close">✕</span>
+
+            <div class="sheet-head">
+              <span class="pg md"><i>kǒu</i></span>
+              <span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+              <span class="sep"></span>
+              <span class="kv"><span class="k">部首</span><span class="v">口</span></span>
+              <span class="sep"></span>
+              <span class="kv"><span class="k">结构</span><span class="v">独体</span></span>
+              <span class="sep"></span>
+              <span class="kv"><span class="k">笔画</span><span class="v">3</span></span>
             </div>
 
-            <div class="tz"><span class="zi">口</span></div>
+            <div class="sheet-body">
+              <div class="tz"><span class="zi">口</span></div>
 
-            <div class="strokes">
-              <div class="st"><span class="zi">丨</span><span class="n">1</span></div>
-              <div class="st"><span class="zi">冂</span><span class="n">2</span></div>
-              <div class="st play"><span class="zi">口</span><span class="n">3</span></div>
+              <div class="strokes">
+                <div class="st"><span class="zi">丨</span><span class="n">1</span></div>
+                <div class="st"><span class="zi">冂</span><span class="n">2</span></div>
+                <div class="st play"><span class="zi">口</span><span class="n">3</span></div>
+              </div>
+
+              <div class="sh-hint">共 <b>3</b> 画 · 点「再写一遍」可重播动画</div>
+
+              <div class="sh-btns">
+                <button class="btn btn-s">‹ 上一字</button>
+                <button class="btn btn-p">再写一遍</button>
+                <button class="btn btn-s">下一字 ›</button>
+              </div>
+
+              <div class="sheet-sec">
+                <div class="words">
+                  <div class="word">人口 <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></div>
+                  <div class="word">开口 <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></div>
+                  <div class="word">门口 <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></div>
+                  <span class="more-w">全部 8 个 ›</span>
+                </div>
+              </div>
+
             </div>
-            <div class="wp-foot">
-              <span class="hint">逐笔累加 · 点空格重放该笔</span>
+
+            <div class="sheet-foot">
+              <button class="btn btn-r" style="flex:1.15">学会啦 · +1 ⭐</button>
+              <button class="btn btn-s" style="flex:1">加入生字本</button>
             </div>
-          </div>
-
-          <div class="meta3">
-            <div class="m"><div class="k">部首</div><div class="v">口</div></div>
-            <div class="m"><div class="k">结构</div><div class="v">独体</div></div>
-            <div class="m"><div class="k">笔画</div><div class="v">3</div></div>
-          </div>
-
-          <div class="block-t">组词 <span class="more">全部 8 个 ›</span></div>
-          <div class="words">
-            <div class="word">人口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
-            <div class="word">开口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
-            <div class="word">门口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
-          </div>
-
-          <div style="margin-top:12px">
-            <button class="btn btn-p btn-full">学会啦 · +1 ⭐</button>
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-s" style="flex:1">生成练习</button>
-            <button class="btn btn-s" style="flex:1">加入生字本</button>
           </div>
         </div>
       </div></div>
-      <div class="cap">375 × 748 · 详情：书写区成组，笔顺分解紧贴田字格</div>
+      <div class="cap">375 × 748 · 详情＝底部弹层，关掉即回列表</div>
     </div>
 
   </div>
 
   <div class="callout info">
     <span class="ic">◆</span>
-    <div><b>为什么把拼音/田字格/笔顺分解收进一个面板</b>　v1.00 这三样是分开漂浮的：拼音格 96px、字 96px、田字格 186px，各自居中、各留一段空白，结果 2/3 屏只有「口 + kǒu」。收进面板后视觉成组、间距压到 8-10px，同样的屏高能多放下 meta、组词和两个操作按钮。<br>
-    <b>笔顺分解紧贴上方</b>：分解格的宽度和大田字格同为 166px，第 1、2、3 格横向对齐。孩子可以上下对看——「这一笔在整字里落在哪」和「这一笔单独写多长」。这是你提的对比需求。</div>
+    <div><b>为什么详情改回弹出式</b>　v1.01 做成了整页详情，手机上一屏只有一个字显得空，平板上还得拆成"左书写 / 右信息"两栏，两套布局两套断点。改回弹层后：手机从底部弹出、关掉即回列表，孩子的动作是"看一眼就走"，不丢上下文；平板同一份内容居中限宽 560 即可，<b>一套结构两端通用，不需要为平板单独排版</b>。<br>
+    <b>顺序照课本</b>：拼音 → 田字格动画 → 笔顺分解 → 组词。分解格与大田字格同宽（手机 180px，平板 250px）横向对齐，可以上下对看"这一笔在整字里落在哪"和"这一笔单独写多长"。<br>
+    <b>四线三格四条线一律 1px</b>：旧版用 border + 渐变线，渐变线落在 33.3% 的亚像素位置被抗锯齿摊成 1.5-2px，所以中间两条看着粗。现在四条线全部由 1px 纯色背景层绘制、位置取整像素，格高取 3 的倍数（27/36/45/51）。</div>
   </div>
 
   <!-- ========== 4 平板 ========== -->
-  <div class="sec"><span class="num">3</span><h2>平板 · iPad 10.2" 分栏</h2><span class="note">810 × 1080 竖屏 · 左书写右信息</span></div>
+  <div class="sec"><span class="num">3</span><h2>平板 · iPad 10.2" 列表 + 居中弹层</h2><span class="note">810 × 1080 竖屏 · 弹层限宽 560 居中，不拆栏</span></div>
   <div class="stage">
     <div>
       <div class="tablet"><div class="screen">
@@ -469,46 +565,90 @@ table.cmp td code{font-family:ui-monospace,monospace;font-size:12px;color:var(--
           <span class="title" style="font-size:18px">一年级上册 · 识字 3</span>
           <span class="tag tag-multi">1 / 4</span>
         </div>
-        <div class="tpad">
-          <div class="left">
-            <div class="write-panel">
-              <div class="wp-top" style="margin-bottom:10px">
-                <span class="pg lg"><i>kǒu</i></span>
-                <span class="spk lg"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
-                <span class="wp-tag" style="font-size:13px">3 画</span>
-              </div>
+        <div class="body-scroll" style="padding:0 32px 26px">
+          <div class="overview" style="margin-bottom:18px;padding:14px 18px">
+            <div class="ring" style="width:52px;height:52px"><b style="font-size:13px">32%</b></div>
+            <div class="ov-txt">
+              <div class="l1" style="font-size:16px">一年级上册 · 本册已学 32 / 100 字</div>
+              <div class="l2" style="font-size:13px">再学 68 字集齐这枚印章</div>
+            </div>
+            <div class="streak" style="font-size:14px;padding:6px 13px">🔥 5</div>
+          </div>
+          <div class="lesson-head" style="margin-bottom:12px">
+            <span class="ln" style="font-size:16px">识字 3</span>
+            <span class="cnt" style="font-size:13px">4 字 · 点卡片看笔顺</span>
+          </div>
+          <div class="tgrid">
+            <div class="cc"><span class="zi">口</span>
+              <div class="pyrow"><span class="pg md"><i>kǒu</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>人口</span><span>开口</span></div>
+            </div>
+            <div class="cc"><span class="zi">耳</span>
+              <div class="pyrow"><span class="pg md"><i>ěr</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>耳朵</span><span>木耳</span></div>
+            </div>
+            <div class="cc"><span class="zi">目</span>
+              <div class="pyrow"><span class="pg md"><i>mù</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>目光</span><span>耳目</span></div>
+            </div>
+            <div class="cc"><span class="zi">手</span>
+              <div class="pyrow"><span class="pg md"><i>shǒu</i></span><span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span></div>
+              <div class="ws"><span>手心</span><span>双手</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 平板弹层：居中限宽，不拆左右两栏 -->
+        <div class="mask center">
+          <div class="sheet">
+            <span class="close">✕</span>
+
+            <div class="sheet-head">
+              <span class="pg md"><i>kǒu</i></span>
+              <span class="spk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 2.6v2.06a7.5 7.5 0 0 1 0 14.68v2.06A9.5 9.5 0 0 0 14 2.6z"/></svg></span>
+              <span class="sep"></span>
+              <span class="kv"><span class="k">部首</span><span class="v">口</span></span>
+              <span class="sep"></span>
+              <span class="kv"><span class="k">结构</span><span class="v">独体</span></span>
+              <span class="sep"></span>
+              <span class="kv"><span class="k">笔画</span><span class="v">3</span></span>
+            </div>
+
+            <div class="sheet-body">
               <div class="tz"><span class="zi">口</span></div>
+
               <div class="strokes">
                 <div class="st"><span class="zi">丨</span><span class="n">1</span></div>
                 <div class="st"><span class="zi">冂</span><span class="n">2</span></div>
                 <div class="st play"><span class="zi">口</span><span class="n">3</span></div>
               </div>
-              <div class="wp-foot"><span class="hint" style="font-size:13px">逐笔累加 · 点空格重放该笔</span></div>
+
+              <div class="sh-hint">共 <b>3</b> 画 · 点「再写一遍」可重播动画</div>
+
+              <div class="sh-btns">
+                <button class="btn btn-s">‹ 上一字</button>
+                <button class="btn btn-p">再写一遍</button>
+                <button class="btn btn-s">下一字 ›</button>
+              </div>
+
+              <div class="sheet-sec">
+                <div class="words">
+                  <div class="word">人口 <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></div>
+                  <div class="word">开口 <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></div>
+                  <div class="word">门口 <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></div>
+                  <span class="more-w">全部 8 个 ›</span>
+                </div>
+              </div>
+
             </div>
-          </div>
-          <div class="right">
-            <div class="meta3" style="margin-top:0">
-              <div class="m"><div class="k" style="font-size:12px">部首</div><div class="v">口</div></div>
-              <div class="m"><div class="k" style="font-size:12px">结构</div><div class="v">独体</div></div>
-              <div class="m"><div class="k" style="font-size:12px">笔画</div><div class="v">3</div></div>
-            </div>
-            <div class="block-t" style="font-size:14px;margin-top:20px">组词</div>
-            <div class="words">
-              <div class="word">人口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
-              <div class="word">开口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
-              <div class="word">门口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
-              <div class="word">出口 <span class="spk" style="width:24px;height:24px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px"><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg></span></div>
-            </div>
-            <div class="block-t" style="font-size:14px;margin-top:22px">释义</div>
-            <div style="font-size:14.5px;line-height:1.7;color:var(--c-text-2)">嘴，人和动物吃东西、发声的器官。</div>
-            <div style="display:flex;gap:10px;margin-top:26px">
-              <button class="btn btn-p" style="height:50px;font-size:16px">学会啦 · +1 ⭐</button>
-              <button class="btn btn-s" style="height:50px;font-size:16px">听写</button>
+
+            <div class="sheet-foot">
+              <button class="btn btn-r" style="flex:1.15">学会啦 · +1 ⭐</button>
+              <button class="btn btn-s" style="flex:1">加入生字本</button>
             </div>
           </div>
         </div>
-      </div></div>
-      <div class="cap" style="max-width:486px">810 × 1080 · 平板分栏：左 44% 书写区，右 56% 信息</div>
+      <div class="cap" style="max-width:486px">810 × 1080 · 平板：列表 4 列，点卡片弹出居中弹层（限宽 560）</div>
     </div>
 
     <div style="flex:1;min-width:300px">

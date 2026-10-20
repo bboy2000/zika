@@ -2,8 +2,8 @@
   "name": "zika-mp",
   "appid": "",
   "description": "小学写字表字卡小程序",
-  "versionName": "0.1.3",
-  "versionCode": "103",
+  "versionName": "0.1.4",
+  "versionCode": "104",
   "transformPx": false,
   "app-plus": {
     "usingComponents": true,

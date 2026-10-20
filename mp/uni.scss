@@ -72,10 +72,14 @@ $zk-fs-body: 15px;
 $zk-fs-caption: 13px;
 $zk-fs-micro: 11px;
 
-/* 四线三格（三档，字号 = 格高/3 ÷ 0.519 使 x-height 填满中格） */
-$zk-pg-sm-h: 28px;  $zk-pg-sm-fs: 16.5px;  $zk-pg-sm-lh: 26px;  $zk-pg-sm-nudge: -1.4px;
-$zk-pg-md-h: 36px;  $zk-pg-md-fs: 21.5px;  $zk-pg-md-lh: 34px;  $zk-pg-md-nudge: -1.8px;
-$zk-pg-lg-h: 46px;  $zk-pg-lg-fs: 28px;    $zk-pg-lg-lh: 44px;  $zk-pg-lg-nudge: -2.4px;
+/* 四线三格（v1.02：格高取 3 的倍数，四条线一律 1px 纯色背景层，位置用 px）
+   字号 = 中格高 ÷ 0.519，使 x-height 填满中格；nudge 让基线压在第 3 条线（实测值） */
+$zk-pg-sm-h: 27px;  $zk-pg-sm-fs: 16.5px;  $zk-pg-sm-lh: 26px;  $zk-pg-sm-nudge: -1.3px;
+$zk-pg-sm-l1: 9px;  $zk-pg-sm-l2: 18px;  $zk-pg-sm-l3: 26px;
+$zk-pg-md-h: 36px;  $zk-pg-md-fs: 21.5px;  $zk-pg-md-lh: 34px;  $zk-pg-md-nudge: -0.3px;
+$zk-pg-md-l1: 12px; $zk-pg-md-l2: 24px;  $zk-pg-md-l3: 35px;
+$zk-pg-lg-h: 45px;  $zk-pg-lg-fs: 28px;    $zk-pg-lg-lh: 44px;  $zk-pg-lg-nudge: -1.4px;
+$zk-pg-lg-l1: 15px; $zk-pg-lg-l2: 30px;  $zk-pg-lg-l3: 44px;
 
 /* 动效 */
 $zk-ease: cubic-bezier(.34, 1.56, .64, 1);
