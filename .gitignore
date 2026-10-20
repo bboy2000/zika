@@ -1,7 +1,9 @@
 # 小程序编译产物
 mp/dist/
+mp/dist-h5/
 mp/unpackage/
 mp/.build.log
+mp/.build-h5.log
 
 node_modules/
 .DS_Store
