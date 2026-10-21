@@ -9,12 +9,13 @@
  * 四线三格拼音格（DESIGN.md 3.3，唯一正确实现）
  * 四条线 = 4 层 1px 纯色背景，位置写 px；格高取 3 的倍数（27/36/45）
  * 文字绝对不能有底色（否则盖出白圈）
+ * 色值回归原版：线 #B8C8DC、字 #2B2F36（深墨，不是灰褐）
  */
 export default {
   name: 'zk-py',
   props: {
     text: { type: String, default: '' },
-    size: { type: String, default: 'sm' } // sm | md | lg
+    size: { type: String, default: 'sm' } // sm 列表 | md 详情 | lg 大字
   }
 }
 </script>
@@ -29,30 +30,30 @@ export default {
   vertical-align: middle;
   background-repeat: no-repeat;
   background-size: 100% 1px;
-  background-image: linear-gradient(#b9c6d6, #b9c6d6), linear-gradient(#b9c6d6, #b9c6d6),
-    linear-gradient(#b9c6d6, #b9c6d6), linear-gradient(#b9c6d6, #b9c6d6);
+  background-image: linear-gradient(#b8c8dc, #b8c8dc), linear-gradient(#b8c8dc, #b8c8dc),
+    linear-gradient(#b8c8dc, #b8c8dc), linear-gradient(#b8c8dc, #b8c8dc);
 }
 .pg-t {
   display: block;
   white-space: nowrap;
   text-align: center;
-  color: #5c574f;
+  color: #2b2f36;
   font-family: Arial, Helvetica, 'Helvetica Neue', sans-serif;
   font-weight: 500;
   letter-spacing: 0.2px;
 }
 
-/* 列表卡片：中格 9px，x-height 填满 */
+/* 列表卡片：中格 9px，x-height 填满；基线按原版公式上抬 2px */
 .pg.sm {
   height: 27px;
-  min-width: 40px;
+  min-width: 36px;
   background-position: 0 0, 0 9px, 0 18px, 0 26px;
 }
 .pg.sm .pg-t {
-  font-size: 16.5px;
+  font-size: 16px;
   line-height: 26px;
   position: relative;
-  top: -1.3px;
+  top: -2px;
 }
 
 /* 详情 / 搜索 */

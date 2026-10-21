@@ -1,39 +1,47 @@
 /**
- * 全局版本号：每次改动递增（P0 = v0.1.0，v0.1.1 = 数据层+双端配置）
+ * 全局版本号：每次改动递增（P0 = v0.1.0）
  * 规则：改动提交信息与本文件版本号必须一致
  */
-export const APP_VERSION = 'v0.1.5'
+export const APP_VERSION = 'v0.2.0'
 
 /**
- * 设计令牌 —— 与 DESIGN.md v1.00 一一对应
- * 页面里禁止硬编码色值，一律引用这里或 uni.scss 的 CSS 变量
+ * 设计令牌 —— 与 DESIGN.md v2.00 一一对应
+ * v2.00 起视觉基线回到 Web 版 v3.52 的「纸卷」体系（米黄纸底 + 纸白卡 + 朱砂 + 金）
+ * 页面里禁止硬编码色值，一律引用 uni.scss 或这里的令牌
  */
 export const THEME = {
   // 朱砂（主色）
-  primary: '#D94F3D',
-  primaryDeep: '#B53A2B',
-  primaryLight: '#FBE7E3',
-  primaryWash: '#FDF3F0',
+  primary: '#C93A2B',
+  primaryDeep: '#A3281C',
+  primaryLight: '#F9E9E4',
+  primaryWash: '#FCF2EE',
 
-  // 奖励金（只用于激励元素）
-  gold: '#F2B230',
-  goldDeep: '#D9941C',
-  goldLight: '#FEF4DE',
+  // 奖励金（激励元素 + 组词徽章）
+  gold: '#C9973F',
+  goldDeep: '#A87C2C',
+  goldLight: '#F7ECD6',
+  goldLine: '#F0DFBC',
 
   // 纸与墨
-  bg: '#FDF9F3',
-  card: '#FFFFFF',
-  text: '#2B2B2B',
-  text2: '#5C574F',
+  bg: '#F6F1E5',
+  card: '#FFFDF7',
+  text: '#33322E',
+  text2: '#6B675C',
   sub: '#8A8378',
-  line: '#EDE6DA',
-  lineSoft: '#F5EFE5',
+  line: '#E6DDC8',
+  lineSoft: '#F0E9D8',
+
+  // 格线
+  grid: '#D9C69A',
+  gridDiag: '#EFE4C4',
+  pyLine: '#B8C8DC',
+  pyInk: '#2B2F36',
 
   // 语义（答错用 warn，不用红）
-  success: '#57A88F',
-  successLight: '#E8F4F0',
-  warn: '#E8A33D',
-  warnLight: '#FDF2E0'
+  success: '#5D8A66',
+  successLight: '#E7F0E6',
+  warn: '#C9973F',
+  warnLight: '#F7ECD6'
 }
 
 /** 间距基数 4px */
@@ -48,21 +56,24 @@ export const MOTION = {
 }
 
 /**
- * 详情弹层（DESIGN.md 5.5）
- * 手机底部弹出、平板居中限宽，两端共用一套结构，不做左右分栏
+ * 详情弹窗（DESIGN.md 5.5）—— 两端都是居中弹窗
+ * 贴底会被原生 tabBar 压住底栏按钮，居中四周留 16px 天然躲开
  */
 export const SHEET = {
-  mask: 'rgba(34,31,28,.42)',
-  phone: { radiusTop: 20, maxHeight: '94%', tz: 180 },
-  pad: { maxWidth: 560, radius: 24, maxHeight: '86%', tz: 250 }
+  mask: 'rgba(46,38,24,.45)',
+  phone: { maxWidth: '100%', radius: 16, maxHeight: '86%', tz: 180, big: 60 },
+  pad: { maxWidth: 520, radius: 20, maxHeight: '86%', tz: 250, big: 72 }
 }
+
+/** 列表列数：课本每课 4 或 8 字，只有 4 列能让两种课都排满 */
+export const GRID_COLS = { phone: 4, pad: 4 }
 
 /** 激励等级阶梯（累计字数达标晋级） */
 export const LEVELS = [
   { lv: 1, need: 0,    name: '蒙童',   color: '#8A8378' },
-  { lv: 2, need: 50,   name: '学童',   color: '#57A88F' },
+  { lv: 2, need: 50,   name: '学童',   color: '#5D8A66' },
   { lv: 3, need: 200,  name: '小秀才', color: '#5B8FA8' },
-  { lv: 4, need: 500,  name: '小举人', color: '#D9941C' },
-  { lv: 5, need: 1000, name: '小进士', color: '#D94F3D' },
-  { lv: 6, need: 2000, name: '小状元', color: '#B53A2B' }
+  { lv: 4, need: 500,  name: '小举人', color: '#A87C2C' },
+  { lv: 5, need: 1000, name: '小进士', color: '#C93A2B' },
+  { lv: 6, need: 2000, name: '小状元', color: '#A3281C' }
 ]

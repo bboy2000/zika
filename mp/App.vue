@@ -11,8 +11,8 @@ export default {
 <style>
 /* 全局基础样式 */
 page {
-  background-color: #FDF9F3;
-  color: #2B2B2B;
+  background-color: #F6F1E5;
+  color: #33322E;
   font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   font-size: 28rpx;
   line-height: 1.6;
@@ -32,21 +32,21 @@ page {
 .page-sub {
   margin-top: 8rpx;
   font-size: 24rpx;
-  color: #8A8378;
+  color: #6B675C;
 }
 
 .panel {
   margin-top: 24rpx;
-  background: #FFFFFF;
+  background: #FFFDF7;
   border-radius: 20rpx;
   padding: 32rpx;
-  box-shadow: 0 2rpx 12rpx rgba(120, 100, 80, 0.06);
+  box-shadow: 0 2rpx 12rpx rgba(90, 70, 30, 0.06);
 }
 
 .placeholder {
   padding: 60rpx 0;
   text-align: center;
-  color: #A9A296;
+  color: #8A8378;
   font-size: 26rpx;
 }
 
@@ -54,6 +54,6 @@ page {
   margin-top: 40rpx;
   text-align: center;
   font-size: 22rpx;
-  color: #B5AEA2;
+  color: #BDB5A4;
 }
 </style>

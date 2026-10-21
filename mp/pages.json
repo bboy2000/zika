@@ -28,17 +28,17 @@
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "字卡",
-    "navigationBarBackgroundColor": "#FDF9F3",
-    "backgroundColor": "#FDF9F3",
-    "backgroundColorTop": "#FDF9F3",
-    "backgroundColorBottom": "#FDF9F3",
+    "navigationBarBackgroundColor": "#F6F1E5",
+    "backgroundColor": "#F6F1E5",
+    "backgroundColorTop": "#F6F1E5",
+    "backgroundColorBottom": "#F6F1E5",
     "rpxCalcMaxDeviceWidth": 430,
     "rpxCalcBaseDeviceWidth": 375
   },
   "tabBar": {
     "color": "#8A8378",
-    "selectedColor": "#D94F3D",
-    "backgroundColor": "#FFFFFF",
+    "selectedColor": "#C93A2B",
+    "backgroundColor": "#FFFDF7",
     "borderStyle": "white",
     "fontSize": "11px",
     "list": [

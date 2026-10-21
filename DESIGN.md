@@ -1,10 +1,11 @@
 # zika 字卡小程序 · DESIGN.md
 
-> 版本：v1.03
-> 日期：2026-10-21
+> 版本：v2.00
+> 日期：2026-10-22
 > 适用范围：微信小程序（手机 375-430px / 平板 iPad 10.2" 810-1080px）
 > 配套：zika小程序开发方案_v1.05.md、design/preview.html（可视化稿）
 >
+> **v1.03 → v2.00**：视觉基线**回到 Web 版 v3.52 的「纸卷」体系**（原 `public/index.html` 的 `:root` 令牌），之前那套"现代白卡"整体废弃。①色板换成米黄纸底 `#F6F1E5` / 纸白卡 `#FFFDF7` / 朱红 `#C93A2B` / 金 `#C9973F` / 暖棕描边 `#E6DDC8`，投影也换成暖棕（纸感全在这两样上）；②卡片恢复竖排结构（大字 → 四线三格拼音 + 金色喇叭圈 → 组词金色胶囊），主字手机 44 / 平板 72；③详情改回**居中弹窗**（原版 `#modal` 形态），顺带解决底栏按钮被原生 tabBar 压住的问题；④田字格改**米字格**（十字 `#D9C69A` + 对角 `#EFE4C4`），对齐原版 `#writerBox`；⑤列数两端统一 **4 列**——课本每课 4 或 8 字，只有 4 列能让这两种课都排满。
 > **v1.02 → v1.03**：①列表列数定为手机 4 列 / 平板 6 列（原表写 2/3 列，与实际排版不符）；②断点实现禁用 `@media`，统一由 JS 判宽后挂 `.pad` 或内联宽度（见 9.6）；③四线三格增加最小宽度，短拼音不再缩成一条；④田字格改 flex 居中并上抬 1.5% 校正楷体视觉重心。
 > **v1.01 → v1.02**：①四线三格四条线改为统一的 1px 背景层（旧版 border+渐变线导致中间两条显粗），格高取 3 的倍数；②详情页由"整页/平板分栏"改为**弹出式弹层**，手机底部弹出、平板居中限宽 560，两端共用一套结构；③新增弹层组件规范（5.5）。
 > **v1.00 → v1.01**：①汉字字体由黑体改回楷体，新增 3.4 外挂路线；②四线三格给出唯一正确实现（四线≠三线、字号按 x-height 定、文字禁止加底色）；③明确汉字大字号不加重（楷体加粗会糊掉笔锋）；④新增格线色 `--c-py` / `--c-grid`。
@@ -39,60 +40,65 @@
 
 ## 2. Color Palette & Roles
 
+> **本表是唯一色源**，逐值取自原 Web 版 `public/index.html` 的 `:root`，不要凭感觉调。
+
 ### 2.1 Primary — 朱砂
 
-| 名称 | HEX | CSS 变量 | 用途 |
+| 名称 | HEX | SCSS 变量 | 用途 |
 |---|---|---|---|
-| Primary | `#D94F3D` | `--c-primary` | 主按钮、选中态、重点数字、奖励印记 |
-| Primary Deep | `#B53A2B` | `--c-primary-deep` | 按下态、印章描边 |
-| Primary Light | `#FBE7E3` | `--c-primary-light` | 浅底标签、选中背景、进度条底 |
-| Primary Wash | `#FDF3F0` | `--c-primary-wash` | 极浅区块底（如错题背景） |
+| Primary | `#C93A2B` | `$zk-primary` | 印章底、实心按钮、选中态、课文标题字 |
+| Primary Deep | `#A3281C` | `$zk-primary-deep` | 按下态、弹层主字、正文强调 |
+| Primary Light | `#F9E9E4` | `$zk-primary-light` | 浅底标签、选中背景 |
+| Primary Wash | `#FCF2EE` | `$zk-primary-wash` | 极浅区块底 |
 
-### 2.2 Reward — 奖励金（激励系统专属）
+### 2.2 Reward — 奖励金（激励系统 + 组词徽章）
 
-| 名称 | HEX | CSS 变量 | 用途 |
+| 名称 | HEX | SCSS 变量 | 用途 |
 |---|---|---|---|
-| Gold | `#F2B230` | `--c-gold` | 星星、积分、等级徽章 |
-| Gold Deep | `#D9941C` | `--c-gold-deep` | 星星描边、金色文字（保证对比度） |
-| Gold Light | `#FEF4DE` | `--c-gold-light` | 奖励条背景、集章册底 |
-
-> 奖励金是**唯一允许发光**的色，且只出现在激励相关元素上。学习主界面不出现金色，形成"看到金色 = 有收获"的条件反射。
+| Gold | `#C9973F` | `$zk-gold` | 课文标题左侧竖条、喇叭圈描边、"学会啦"按钮 |
+| Gold Deep | `#A87C2C` | `$zk-gold-deep` | 金色文字（保证对比度）、喇叭图标 |
+| Gold Light | `#F7ECD6` | `$zk-gold-light` | 组词胶囊底、课文标题渐变起点、喇叭圈底 |
+| Gold Line | `#F0DFBC` | `$zk-gold-line` | 组词胶囊描边、字数胶囊描边 |
 
 ### 2.3 Neutral — 纸与墨
 
-| 名称 | HEX | CSS 变量 | 用途 |
+| 名称 | HEX | SCSS 变量 | 用途 |
 |---|---|---|---|
-| Paper | `#FDF9F3` | `--c-bg` | 全局背景 |
-| Surface | `#FFFFFF` | `--c-surface` | 卡片、弹层 |
-| Ink | `#2B2B2B` | `--c-text` | 正文、汉字主色 |
-| Ink Soft | `#5C574F` | `--c-text-2` | 次要文字、释义 |
-| Gray | `#8A8378` | `--c-text-3` | 辅助说明、占位符 |
-| Line | `#EDE6DA` | `--c-line` | 分割线、卡片描边 |
-| Line Soft | `#F5EFE5` | `--c-line-soft` | 内部分割 |
-| Grid 田字格线 | `#E3B3AA` | `--c-grid` | 田字格外框与虚线十字（极淡朱砂） |
-| Py Line 四线三格线 | `#B9C6D6` | `--c-py` | 拼音四线三格的 4 根线（淡钢蓝） |
+| Paper | `#F6F1E5` | `$zk-bg` | 全局背景（米黄，不是米白） |
+| Surface | `#FFFDF7` | `$zk-card` | 卡片、弹层（纸白，不是纯白） |
+| Ink | `#33322E` | `$zk-text` | 正文、汉字主色 |
+| Ink Soft | `#6B675C` | `$zk-text-2` | 次要文字、释义、提示 |
+| Gray | `#8A8378` | `$zk-sub` | 占位符、极弱说明 |
+| Line | `#E6DDC8` | `$zk-line` | **卡片描边（必须可见）**、分割线 |
+| Line Soft | `#F0E9D8` | `$zk-line-soft` | 内部分割 |
+| Grid 十字 | `#D9C69A` | `$zk-grid` | 米字格十字线、外框 `#DFD0AB` |
+| Grid 对角 | `#EFE4C4` | `$zk-grid-diag` | 米字格两条对角斜线 |
+| Py Line 四线三格 | `#B8C8DC` | `$zk-py-line` | 拼音四线三格的 4 根线（淡钢蓝） |
+| Py Ink 拼音字 | `#2B2F36` | `$zk-py-ink` | 四线格里的拼音字（**深墨，不是灰褐**） |
 
-> **两种格线必须是两种颜色**：田字格用淡朱砂（属"纸上的印"），四线三格用淡钢蓝（属"课本体例"）。同色会让两个格子糊成一块。两色都不可再加深，否则抢字的注意力。
+> **纸感 = 米黄底 + 暖棕描边 + 暖棕投影**。三者缺一就退回"现代白卡"，这是 v2.00 返工的根因。
+> 拼音字色必须是深墨 `#2B2F36`——用灰褐会让拼音显得虚、不像课本印刷。
 
 ### 2.4 Semantic — 语义色
 
-| 名称 | HEX | CSS 变量 | 用途 |
+| 名称 | HEX | SCSS 变量 | 用途 |
 |---|---|---|---|
-| Success 竹青 | `#57A88F` | `--c-success` | 答对、完成、进度达标 |
-| Success Light | `#E8F4F0` | `--c-success-light` | 成功态浅底 |
-| Warn 杏橙 | `#E8A33D` | `--c-warn` | 提示、待办、"再试一次" |
-| Warn Light | `#FDF2E0` | `--c-warn-light` | 提示浅底 |
+| Success 竹青 | `#5D8A66` | `$zk-success` | 答对、已学标记、进度达标 |
+| Success Light | `#E7F0E6` | `$zk-success-light` | 成功态浅底 |
+| Warn 杏橙 | `#C9973F` | `$zk-warn` | 提示、"再试一次"（复用金色，不再引入新色） |
 
-> **儿童场景禁用刺眼错误红**。答错不用红色报警，用杏橙 `#E8A33D` + "再看看" 文案。红色只属于朱砂主色（正向、印记），不与"错误"绑定，避免孩子对红色产生焦虑。
+> **儿童场景禁用刺眼错误红**。答错不用红色报警，用金橙 + "再看看"文案。
 
 ### 2.5 Shadow
 
-| 名称 | 值 | CSS 变量 |
+投影必须带暖棕，不能用中性灰（`rgba(43,43,43,.x)` 是旧方案，已废弃）。
+
+| 名称 | 值 | SCSS 变量 |
 |---|---|---|
-| shadow-sm | `0 1px 2px rgba(43,43,43,.04)` | `--sh-sm` |
-| shadow-md | `0 2px 8px rgba(43,43,43,.06), 0 1px 2px rgba(43,43,43,.04)` | `--sh-md` |
-| shadow-lg | `0 8px 24px rgba(43,43,43,.10), 0 2px 6px rgba(43,43,43,.05)` | `--sh-lg` |
-| shadow-gold | `0 4px 14px rgba(242,178,48,.32)` | `--sh-gold` |
+| shadow-sm | `0 2px 6px rgba(90,70,30,.05)` | `$zk-sh-sm` |
+| shadow-md | `0 6px 18px rgba(90,70,30,.10)` | `$zk-sh-md` |
+| shadow-lg（弹窗） | `0 24px 60px rgba(0,0,0,.30)` | `$zk-sh-lg` |
+| shadow-seal（印章） | `0 4px 10px rgba(163,40,28,.28)` | `$zk-sh-seal` |
 
 ---
 
@@ -123,7 +129,7 @@ font-variant-numeric: tabular-nums;
 
 | 层级 | Size | Weight | Line Height | 用途 |
 |---|---|---|---|---|
-| Hanzi Grid（田字格内） | 166px 格的 76% | 400 | 1 | 详情页书写区主字 |
+| Hanzi Grid（米字格内） | 180px 格的 72% | 400 | 1 | 详情页书写区主字 |
 | Hanzi Card | 52px | 400 | 1.08 | 列表卡片字 |
 | Hanzi Inline | 15px | 400 | 1.6 | 组词、释义里的汉字 |
 | Display | 22px | 700 | 1.35 | 页面主标题 |
@@ -184,7 +190,9 @@ font-variant-numeric: tabular-nums;
 
 **最小宽度**：`.pg` 宽度随拼音长度自适应，但必须给下限（sm 40px / md 52px / lg 64px）并 `text-align:center`。否则 `yī` 这类短拼音会缩成一条与格线同宽的窄条，一列卡片看过去参差不齐。
 
-**线色**：`--c-py: #B9C6D6`（淡钢蓝）。灰度太高会看不清、太艳会抢字，课本用的就是这个色域。田字格十字线用 `--c-grid: #E3B3AA`（极淡朱砂），与四线三格的蓝形成区分。
+**线色**：`$zk-py-line: #B8C8DC`（淡钢蓝）。灰度太高会看不清、太艳会抢字，课本用的就是这个色域。
+**字色**：`$zk-py-ink: #2B2F36`（深墨）——不要用灰褐 `#6B675C`，会让拼音显得虚、不像课本印刷。
+米字格十字线用 `$zk-grid: #D9C69A`、对角 `$zk-grid-diag: #EFE4C4`，与四线三格的蓝形成区分。
 
 ### 3.4 字体外挂路线（待拍板）
 
@@ -194,7 +202,7 @@ font-variant-numeric: tabular-nums;
 |---|---|---|
 | A 系统楷体兜底 | `font-family:"KaiTi","Kaiti SC",…,sans-serif` | 零成本，Android 端实际回落黑体，两端不一致。**只作兜底** |
 | **B 字体子集 + loadFontFace**（推荐） | 只保留本库 2307 字的 woff，约 600-900KB，放云存储，启动时 `wx.loadFontFace({global:true})` 加载一次 | 全端统一楷体；原生排版，列表滚动最流畅；组词/释义/页眉都能用 |
-| C canvas 逐字绘制 | 用 hanzi-writer-data 的笔画路径直接画 | 与笔顺动画完全同源；但列表多 canvas 有性能风险，且文字不能被排版使用。**只用于田字格/笔顺** |
+| C canvas 逐字绘制 | 用 hanzi-writer-data 的笔画路径直接画 | 与笔顺动画完全同源；但列表多 canvas 有性能风险，且文字不能被排版使用。**只用于米字格/笔顺** |
 
 **推荐组合：B 为主 + C 专用于田字格。** 字体选型首选 **文鼎 PL 楷（AR PL UKai）**——开源可商用（Arphic Public License，明确允许嵌入与子集化），且 hanzi-writer 的汉字数据正出自这款楷体，**与笔顺动画 100% 同源**，不会出现「认的字」和「写的字」两个样子。备选霞鹜文楷（OFL，更秀气，但与笔顺数据不同源）。
 
@@ -247,29 +255,45 @@ font-variant-numeric: tabular-nums;
 }
 ```
 
-### 4.2 Cards
+### 4.2 Cards（字卡列表项，纸白竖卡）
+
+结构自上而下：**楷体大字 → 四线三格拼音 + 金色喇叭圈 → 组词金色胶囊**，全部居中竖排。
 
 ```css
 .card {
-  background: #fff; border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(43,43,43,.06), 0 1px 2px rgba(43,43,43,.04);
-  border: 1px solid #F5EFE5;   /* 极细描边，防止白卡在米底上糊边 */
+  background: #FFFDF7;              /* 纸白，不是纯白 */
+  border: 1.5px solid #E6DDC8;      /* 暖棕描边，必须看得见 */
+  border-radius: 12px;              /* 平板 14px */
+  padding: 14px 4px 12px;           /* 左右只有 4px，见下方列宽说明 */
+  min-height: 152px;                /* 平板 206px */
+  box-shadow: 0 2px 6px rgba(90,70,30,.05);   /* 暖棕投影 */
+  display: flex; flex-direction: column; align-items: center;
 }
-.card:active { transform: scale(.98); transition: transform .16s ease; }
+.card:active { transform: translateY(-2px); border-color: #D8C9A6; }
 
-/* 字卡列表项 */
-.card-char { display:flex; flex-direction:column; align-items:center; gap:6px; padding:18px 8px; }
-.card-char .zi { font-size:56px; font-weight:600; color:#2B2B2B; line-height:1; }
-.card-char .py { font-size:13px; color:#8A8378; letter-spacing:.3px; }
-
-/* 已学态：右上角小印章，不整卡变色（避免列表花） */
-.card-char.learned::after {
-  content:""; position:absolute; top:8px; right:8px;
-  width:10px; height:10px; border-radius:50%;
-  background:#57A88F;
+.card .big {                        /* 生字，必须楷体 */
+  font-family: "zika-kai","Kaiti SC","KaiTi",serif;
+  font-size: 44px; line-height: 54px; font-weight: 700; color: #33322E;
+}
+.card .sound {                      /* 喇叭：金色圈 + 金底 */
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid #C9973F; background: #F7ECD6;
+}
+.card .w {                          /* 组词胶囊 */
+  font-size: 10px; line-height: 14px; color: #7A7465;
+  background: #F7ECD6; border: 1px solid #F0DFBC;
+  border-radius: 999px; padding: 1px 4px; margin: 2px 1px 0;
+}
+/* 已学：右上角绿点（小程序新增，原版无） */
+.card.on::after {
+  content:""; position:absolute; top:6px; right:7px;
+  width:7px; height:7px; border-radius:50%; background:#5D8A66;
 }
 ```
+
+**尺寸铁律**：手机单格 77px，组词胶囊必须能一行放两个——`font-size 10px / padding 1px 4px / margin 1px` 是三个一起调出来的值，单独放大任何一个都会退化成"一字一行"。
+
+**喇叭图标**：小程序不支持内联 SVG，用 base64 data-URI 作 `background-image`（金色 `#8A6420` 版给列表、朱红 `#C93A2B` 版给弹层）。
 
 ### 4.3 Inputs
 
@@ -302,44 +326,51 @@ font-variant-numeric: tabular-nums;
 .tag-new     { background:#E8F4F0; color:#3E7F6C; }  /* 新课 */
 ```
 
-### 4.6 Modals / Dialogs
+### 4.6 Modals / Dialogs（居中弹窗，唯一形态）
 
 ```css
-.mask { background: rgba(43,43,43,.36); backdrop-filter: blur(2px); }
-.dialog {
-  background:#fff; border-radius: 20px; padding: 24px 20px 20px;
-  box-shadow: 0 8px 24px rgba(43,43,43,.10);
-  animation: dialog-in .26s cubic-bezier(.34,1.56,.64,1);
+.mask { background: rgba(46,38,24,.45); }   /* 暖棕遮罩，不是冷灰 */
+
+.modal {
+  background: #FFFDF7;
+  border-radius: 16px;              /* 平板 20px */
+  max-width: 100%;                  /* 平板 520px */
+  max-height: 86%;
+  box-shadow: 0 24px 60px rgba(0,0,0,.30);
+  animation: pop .22s ease both;
 }
-@keyframes dialog-in {
-  from { opacity:0; transform: scale(.92) translateY(8px); }
-  to   { opacity:1; transform: scale(1) translateY(0); }
+@keyframes pop {
+  from { transform: scale(.94); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
 }
 ```
 
-### 4.7 田字格（核心自绘组件）
+**必须居中，不要贴底**：小程序原生 tabBar 永远在最上层，`position:fixed` 的贴底弹层会被它压住底栏按钮（实测「学会啦」被切掉一半）。居中弹窗四周留 16px，天然躲开 tabBar。
+
+### 4.7 米字格（核心自绘组件）
+
+**格型是米字格**（十字 + 两条对角线），对齐原版 Web 的 `#writerBox`；早期方案写的"田字格"作废。
 
 ```css
-.tianzige {
-  position: relative; background: #fff;
-  border: 1.5px solid #E0A8A0;      /* 朱砂淡描外框 */
-  border-radius: 6px;                /* 微圆角，纸的裁切感 */
+.tzg {
+  background: #FFFEF8;                /* 格子底比卡片再白一点，从纸底"浮"出来 */
+  border: 1.5px solid #DFD0AB;
+  border-radius: 12px;
   overflow: hidden;
 }
-/* 红色虚线十字 */
-.tianzige::before, .tianzige::after {
-  content:""; position:absolute; border-color:#E0A8A0;
-  border-style: dashed; border-width: 0 0 1px 0;
-}
-.tianzige::before { left:0; right:0; top:50%; }
-.tianzige::after  { top:0; bottom:0; left:50%; border-width:0 1px 0 0; }
+/* 十字：暖金实线 */
+.tzg-h { position:absolute; left:0; right:0; top:50%; height:1px; margin-top:-.5px; background:#D9C69A; }
+.tzg-v { position:absolute; top:0; bottom:0; left:50%; width:1px; margin-left:-.5px; background:#D9C69A; }
+/* 对角线：长度 = 格宽 × √2，绕中心旋转 */
+.tzg-d { position:absolute; left:50%; top:50%; width:141.42%; height:1px;
+         margin-left:-70.71%; margin-top:-.5px; background:#EFE4C4; }
+.tzg-d1 { transform: rotate(45deg); }
+.tzg-d2 { transform: rotate(-45deg); }
 ```
 
-> 底色用纸白而非米白，让格子从背景中"浮"出来；边框用朱砂 30% 浓度，比纯红虚线更接近课本印刷。
-
-**字在格内居中**：用 `display:flex; align-items:center; justify-content:center` 让字面居中，再给文字 `transform: translateY(-1.5%)` 上抬——楷体字形在 em 框内重心偏下，不校正会显得字"坐"在格底部。字占格 72%，四周留白是课本写法。
-
----
+- 对角斜线**必须用元素 + rotate 画**，不能用 `linear-gradient(45deg,…)`：斜向渐变在非整数像素上会被抗锯齿摊粗，四条线会粗细不一（四线三格踩过同样的坑）。
+- 字占格 72%，`display:flex` 居中后再 `translateY(-1.5%)`——楷体字形在 em 框内重心偏下，不校正会显得字"坐"在格底。
+- 尺寸：手机 180px，平板 250px。
 
 ## 5. Layout Principles
 
@@ -359,9 +390,11 @@ font-variant-numeric: tabular-nums;
 
 ### 5.2 Grid
 
-- **手机**：内容单列，左右边距 16px（不是 32，儿童界面信息密度需要略高）
-- **平板**：容器 `max-width: 720px` 居中；列表转 4 列 `grid-template-columns: repeat(auto-fill, minmax(150px, 1fr))`，列间距 12px
-- **详情页两端都是弹层**：手机从底部弹出（宽 100%，上两角圆角 20）；平板居中弹出（限宽 560，四角圆角 24）。**不做左右分栏**，一套结构两端通用
+- **列数两端都是 4 列**。课本每课就是 4 或 8 个字，只有 4 列能让这两种课都排满；6 列时 4 字课空两格、8 字课断成 6+2。
+- 手机：单格 `calc(25% - 8px)`，卡片间距 8px，左右边距 12px。
+- 平板：单格 `calc(25% - 14px)`，卡片间距 14px，左右边距 24px，主字放大到 72px。
+- **列宽必须内联**（`:style="cellStyle"`），不要写进 wxss：小程序 wxss 的媒体查询在部分机型不生效（见 9.6）。
+- **详情两端都是居中弹窗**，一套结构，不做左右分栏。
 
 ### 5.3 Container
 
@@ -378,35 +411,19 @@ font-variant-numeric: tabular-nums;
 
 ### 5.5 详情弹层（字卡详情唯一形态）
 
-**为什么是弹层，不是页面。** 孩子看字卡的动作是"看一眼就走"——点开、看笔顺、关掉、继续列表。整页会中断上下文（返回还要重新定位）；平板做分栏更要多维护一套断点。弹层把这件事收敛成一次开合，**一套结构两端通用**。
+**居中弹窗，不是底部抽屉。** 结构三段：
 
-| | 手机 | 平板 |
+| 段 | 内容 | 行为 |
 |---|---|---|
-| 出现方式 | 底部滑出 | 居中淡入 |
-| 宽 | 100% | 限宽 **560** |
-| 圆角 | 上两角 20 | 四角 24 |
-| 田字格 | 180 | 250 |
-| 最大高 | 94% | 86% |
-| 遮罩 | `rgba(34,31,28,.42)` | 同 |
+| head | 朱红大字（手机 60px / 平板 72px）+ 四线三格拼音（md）+ 金色喇叭 + 部首·结构·出处 + 右上角朱红关闭钮 | 固定 |
+| body | 米字格 → 上一字/下一字 → 组词胶囊 → 释义 | 内部 `scroll-view` 滚动 |
+| foot | 「学会啦 +1★」实心金按钮 + 「加入生字本」描边按钮 | **固定，不可滚** |
 
-**结构（三段式，中间段滚动）**
+**为什么居中而不是贴底**：贴底会被原生 tabBar 压住 foot（实测「学会啦」被切掉一半）。居中后四周留 16px，问题消失，且平板不用再单独算位置。
 
-```
-┌─ head ───────────── 固定 ─┐  拼音四线三格(md) + 喇叭 ┊ 部首 口 ┊ 结构 独体 ┊ 笔画 3
-│                            │  右上角 29px 朱红圆形关闭钮
-├─ body ───────────── 滚动 ─┤  田字格 → 笔顺分解(同宽对齐) → 「共 N 画·点再写一遍可重播」
-│                            │  → 三按钮(‹ 上一字 / 再写一遍·主 / 下一字 ›) → 组词 chips
-├─ foot ───────────── 固定 ─┤  学会啦·+1⭐(金·主) ｜ 加入生字本(次级)
-└────────────────────────────┘
-```
+**大字必须包一层 view**：`<view class="zd-big"><text>字</text></view>`。直接把 text 当 flex item 会被压窄，字变瘦长（实测 60px 的字被压到 56px 宽）。
 
-**四条实现约束**：
-1. **底栏必须固定在 foot 段**。放进滚动区会在内容多时被裁掉——「学会啦」是最核心的激励动作，任何机型都必须可见。
-2. **弹层要 `overflow:hidden`**。否则内部背景块会溢出到圆角外，平板四角变成直角。
-3. **三按钮文案要短**（‹ 上一字 / 再写一遍 / 下一字 ›），375 宽下用"上一个/下一个"会换行。
-4. **关闭钮是朱红圆形**（29px），是弹层里唯一的圆形红色元素——与「印记」语义一致，也最容易被孩子找到。
-
----
+**组件形态**：整块做成 `components/zk-detail`，不用"容器组件 + slot"——小程序组件默认样式隔离，slot 里的类名会全部失效。
 
 ## 6. Depth & Elevation
 
@@ -522,10 +539,10 @@ font-variant-numeric: tabular-nums;
 
 | 断点 | 设备 | 布局 |
 |---|---|---|
-| < 600px | 全部手机（375 为基准） | 边距 16px，字卡列表 **4 列**，卡片主字 46px |
-| ≥ 600px | 平板（iPad 10.2" 竖屏 810 / 横屏 1080） | 边距 24px，列表 **6 列**，详情弹层限宽 560 居中 |
+| < 600px | 全部手机（375 为基准） | 边距 12px，列表 **4 列**，主字 44px，卡片间距 8px |
+| ≥ 600px | 平板（iPad 10.2" 竖屏 810 / 横屏 1080） | 边距 24px，列表 **4 列**，主字 72px，卡片间距 14px，弹窗限宽 520 |
 
-**列数为什么是 4/6 而不是 2/3**：字卡主体是 46px 楷体大字 + 四线三格拼音，4 列时单格约 81px（拼音最长的 `zhuāng` 仍放得下），一屏可看 20 字左右，翻找效率与字号取得平衡；2 列一屏只 8 字，翻一册要滑十几屏，孩子会烦。
+**为什么平板也是 4 列**：810px 宽时 6 列会让 4 字课（低年级）空两格、8 字课（中高年级）断成 6+2，两种课都不整齐；4 列则 4 字满行、8 字两行满。原版 Web 的 `minmax(148px,1fr)` 在 810 宽算下来同样是 4 列。
 
 ### 9.2 rpx 换算锁定
 
@@ -578,7 +595,7 @@ measure() {
 - 布局开关挂 class：`<view class="page" :class="{ pad: isPad }">`，平板样式写成 `.page.pad .xxx`。
 - **列宽这类关键尺寸用内联 style**（`:style="cellStyle"`），优先级最高，不受任何层叠影响。
 - `onReady` 里再调一次 `measure()`：首屏布局完成前的视口宽可能还是初始值；平板横竖屏切换靠 `wx.onWindowResize` 复测。
-- 弹层尺寸同理：`zk-detail` 通过 `isPad` prop 切换 180/250 田字格与弹出方式，不用媒体查询。
+- 弹层尺寸同理：`zk-detail` 通过 `isPad` prop 切换 180/250 米字格与尺寸，不用媒体查询。
 
 ## 10. Agent Prompt Guide
 
@@ -597,8 +614,8 @@ measure() {
 ### 10.2 Component Prompts
 
 1. 「做一个字卡列表页：米白底 #FDF9F3，卡片白底圆角16带1px #F5EFE5描边，每格显示 56px 汉字 + 13px 拼音，手机2列、平板4列（auto-fill minmax(150px,1fr)），已学字右上角加 #57A88F 小圆点」
-2. 「做一个字卡详情弹层（手机版）：从底部滑出白卡，上两角圆角20，遮罩 rgba(34,31,28,.42)。顶部一行：四线三格拼音(36px高) + 金色圆形喇叭 + 竖分隔线 + 部首/结构/笔画三组小标签，右上角 29px 朱红圆形关闭钮。往下依次：180px 田字格（淡朱砂十字虚线）、三格笔顺分解、提示「共 3 画 · 点「再写一遍」可重播动画」、三个按钮（‹ 上一字 / 再写一遍·主 / 下一字 ›）、组词 chips 一行带小喇叭。底部固定操作栏：学会啦·+1⭐（金）+ 加入生字本（次级）」
-3. 「平板端复用同一个详情弹层：#FDF9F3 列表背景（4 列字卡）+ 遮罩，弹层居中限宽 560、四角圆角 24、田字格放大到 250。不要另做分栏布局」
+2. 「做一个字卡详情弹窗：**居中弹窗**（不要贴底，会被原生 tabBar 压住底栏），纸白 #FFFDF7、圆角 16、四周留白 16、阴影 0 24px 60px rgba(0,0,0,.3)、pop 动画（scale .94→1）。head：朱红 60px 楷体大字 + 四线三格拼音(md) + 金色喇叭圈 + 「部首 · 结构 · 课名」，右上角 30px 朱红圆形关闭钮。body 滚动：180px 米字格（十字 #D9C69A、对角 #EFE4C4）→ ‹上一字/下一字› → 组词金色胶囊 → 释义。foot 固定：学会啦 +1★（实心金）+ 加入生字本（描边）」
+3. 「平板端复用同一个详情弹窗：#F6F1E5 列表背景（4 列字卡，主字 72px）+ 遮罩 rgba(46,38,24,.45)，弹窗居中限宽 520、圆角 20、米字格放大到 250、head 大字 72px。不要另做分栏布局」
 4. 「做集章册页面：12 个朱红方印网格，已获得显示实心印章（#D94F3D 边框 + 印文），未获得显示虚线灰框，手机3列平板6列」
 5. 「做等级晋级弹窗：白底圆角20卡片，中央 120px 圆形徽章（#D94F3D 底 + 白字称号），下方"你已经是小秀才了，认识 200 个字"，底部单个 Primary 按钮"继续学"」
 6. 「做顶部学习概览条：左侧火苗图标 + 连续天数（金色数字），右侧进度环（#D94F3D 到 #F2B230 渐变，环宽 4px），中间显示"本册 32/100"」

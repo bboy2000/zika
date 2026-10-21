@@ -1,58 +1,66 @@
 <template>
   <view class="page" :class="{ pad: isPad }">
-    <!-- 顶栏：册次 + 已学进度（激励可见化） -->
-    <view class="topbar">
-      <view class="tb-l">
-        <text class="tb-title">写字表</text>
-        <text class="tb-sub">{{ curBook ? curBook.label : '加载中' }}</text>
+    <!-- 品牌区：朱砂印章 + 衬线标题（原版 header 的手机版形态） -->
+    <view class="brand">
+      <view class="seal"><text class="seal-t">字</text></view>
+      <view class="brand-txt">
+        <text class="brand-h1">小学1-6年级写字表字卡</text>
+        <text class="brand-sub">统编语文 · 拼音 · 组词 · 笔顺</text>
       </view>
-      <view class="tb-r">
-        <text class="tb-star">★</text>
-        <text class="tb-num">{{ learnedCount }}</text>
-        <text class="tb-total">/ {{ curBook ? curBook.charCount : 0 }}</text>
+      <view class="stat">
+        <text class="stat-s">★</text>
+        <text class="stat-n">{{ learnedCount }}</text>
+        <text class="stat-t">/{{ curBook ? curBook.charCount : 0 }}</text>
       </view>
     </view>
 
-    <!-- 册次选择：12 册横滑 -->
-    <scroll-view class="books" scroll-x :show-scrollbar="false" :scroll-into-view="scrollTo">
-      <view
-        v-for="b in books"
-        :key="b.id"
-        :id="'bk-' + b.id"
-        class="chip"
-        :class="{ on: b.id === bookId }"
-        @tap="pickBook(b.id)"
-      >
-        <text class="chip-g">{{ b.grade }}</text>
-        <text class="chip-v">{{ b.vol }}</text>
-      </view>
-    </scroll-view>
+    <!-- 控制区：册次 + 跳课（胶囊下拉，同原版 select 外观） -->
+    <view class="controls">
+      <picker mode="selector" :range="bookLabels" :value="bookIndex" @change="onBookPick">
+        <view class="sel">
+          <text class="sel-t">{{ curBook ? '统编版语文' + curBook.label : '加载中' }}</text>
+          <text class="sel-caret">▾</text>
+        </view>
+      </picker>
+      <picker mode="selector" :range="jumpLabels" @change="onJumpPick">
+        <view class="sel sel-jump">
+          <text class="sel-t">跳转到课程…</text>
+          <text class="sel-caret">▾</text>
+        </view>
+      </picker>
+    </view>
 
-    <!-- 列表 -->
-    <view v-if="loading" class="tip">正在打开课本…</view>
-    <view v-else-if="errorMsg" class="tip">{{ errorMsg }}</view>
+    <view class="tip">
+      点<text class="tip-b">喇叭</text>朗读读音与组词；点字卡查看<text class="tip-b">笔顺</text>与组词；共<text class="tip-b">{{ curBook ? curBook.charCount : 0 }}</text>个汉字。
+    </view>
+
+    <!-- 列表：按课分组 -->
+    <view v-if="loading" class="hint">正在打开课本…</view>
+    <view v-else-if="errorMsg" class="hint">{{ errorMsg }}</view>
     <view v-else class="lessons">
-      <view v-for="(ls, li) in lessons" :key="li" class="lesson">
-        <view class="ls-head">
-          <view class="ls-bar"></view>
-          <text class="ls-name">{{ ls.name }}</text>
-          <text class="ls-count">{{ ls.chars.length }} 字</text>
+      <view v-for="(ls, li) in lessons" :key="li" :id="'ls-' + li" class="lesson">
+        <view class="lesson-title">
+          <text class="lt-name">{{ ls.name }}</text>
+          <text class="lt-count">{{ ls.chars.length }} 字</text>
         </view>
         <view class="grid">
           <view
             v-for="(c, ci) in ls.chars"
             :key="ci"
-            class="cell"
-            :class="{ learned: learnedMap[c.ch] }"
+            class="card"
+            :class="{ on: learnedMap[c.ch] }"
             :style="cellStyle"
             @tap="openAt(c.idx)"
           >
-            <text class="zi">{{ c.ch }}</text>
-            <view class="py-wrap">
+            <text class="big">{{ c.ch }}</text>
+            <view class="pyrow">
               <zk-py :text="c.py" size="sm" />
+              <view class="sound" @tap.stop="speak">
+                <view class="sound-i"></view>
+              </view>
             </view>
-            <view class="spk" @tap.stop="speak">
-              <text class="spk-i">♪</text>
+            <view v-if="c.words && c.words.length" class="words">
+              <text v-for="(w, wi) in c.words" :key="wi" class="w">{{ w }}</text>
             </view>
           </view>
         </view>
@@ -99,7 +107,6 @@ export default {
       flat: [],
       loading: true,
       errorMsg: '',
-      scrollTo: '',
       learnedMap: {},
       learnedCount: 0,
       sheetShow: false,
@@ -114,10 +121,24 @@ export default {
     }
   },
   computed: {
+    bookLabels() {
+      return this.books.map((b) => '统编版语文' + b.label)
+    },
+    bookIndex() {
+      const i = this.books.findIndex((b) => b.id === this.bookId)
+      return i < 0 ? 0 : i
+    },
+    jumpLabels() {
+      return this.lessons.map((l) => l.name)
+    },
     // 列宽直接内联：小程序 wxss 的媒体查询在某些机型/端上不生效，
-    // 内联样式优先级最高，手机 4 列 / 平板 6 列由 JS 判宽决定，两端一致
+    // 内联样式优先级最高，列数由 JS 判宽决定，两端一致。
+    // 列数两端都定 4：课本每课字数就是 4 或 8，只有 4 列能让这两种课都排满
+    //   （6 列时 4 字课空两格、8 字课断成 6+2）。原版 Web 的 grid 是
+    //   minmax(148px,1fr)，810 宽算下来也是 4 列。
+    //   手机单格 77px，所以组词胶囊做了紧凑化（见 .w），保证一行能放两个。
     cellStyle() {
-      return { width: this.isPad ? 'calc(16.6667% - 8px)' : 'calc(25% - 8px)' }
+      return { width: this.isPad ? 'calc(25% - 14px)' : 'calc(25% - 8px)' }
     }
   },
   onLoad() {
@@ -187,7 +208,6 @@ export default {
       this.errorMsg = ''
       this.bookId = id
       this.curBook = this.books.find((b) => b.id === id) || null
-      this.scrollTo = 'bk-' + id
       try {
         const bk = await loadBook(id)
         const flat = []
@@ -220,6 +240,28 @@ export default {
         this.errorMsg = '本册读取失败：' + (e && e.message ? e.message : e)
         this.loading = false
       }
+    },
+
+    onBookPick(e) {
+      const b = this.books[Number(e.detail.value)]
+      if (b) this.pickBook(b.id)
+    },
+
+    // 跳课：拿目标分组的实际位置再滚，不靠估算高度
+    onJumpPick(e) {
+      const li = Number(e.detail.value)
+      if (isNaN(li)) return
+      const q = uni.createSelectorQuery().in(this)
+      q.select('#ls-' + li)
+        .boundingClientRect()
+        .selectViewport()
+        .scrollOffset()
+        .exec((res) => {
+          const rect = res && res[0]
+          const off = res && res[1]
+          if (!rect || !off) return
+          uni.pageScrollTo({ scrollTop: rect.top + off.scrollTop - 6, duration: 220 })
+        })
     },
 
     refreshLearned() {
@@ -308,212 +350,333 @@ export default {
 </script>
 
 <style>
+/* ============================================================
+   视觉基线：public/index.html v3.52 的「纸卷」体系（DESIGN.md v2.00）
+   米黄纸底 #F6F1E5 / 纸白卡 #FFFDF7 / 朱砂 #C93A2B / 金 #C9973F
+   暖棕描边 #E6DDC8、暖棕投影，纸感全靠这两样，不要换成中性灰
+   ============================================================ */
 .page {
   min-height: 100vh;
-  padding: 0 0 24px;
+  padding: 0 0 28px;
   box-sizing: border-box;
+  background: #f6f1e5;
+  background-image: radial-gradient(circle at 10% 12%, rgba(233, 190, 80, 0.1), rgba(233, 190, 80, 0) 42%),
+    radial-gradient(circle at 92% 85%, rgba(201, 58, 43, 0.07), rgba(201, 58, 43, 0) 42%);
 }
 
-/* ---------- 顶栏 ---------- */
-.topbar {
+/* ---------- 品牌区 ---------- */
+.brand {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 12px 16px 6px;
+  align-items: center;
+  padding: 12px 14px 8px;
 }
-.tb-l {
+.seal {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  flex: none;
   display: flex;
-  align-items: baseline;
-}
-.tb-title {
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #2b2b2b;
-}
-.tb-sub {
-  margin-left: 8px;
-  font-size: 12px;
-  color: #8a8378;
-}
-.tb-r {
-  display: flex;
-  align-items: baseline;
-}
-.tb-star {
-  font-size: 12px;
-  color: #f2b230;
-  margin-right: 3px;
-}
-.tb-num {
-  font-size: 15px;
-  font-weight: 700;
-  color: #d9941c;
-}
-.tb-total {
-  font-size: 11px;
-  color: #a9a296;
-  margin-left: 2px;
-}
-
-/* ---------- 册次条 ---------- */
-.books {
-  white-space: nowrap;
-  padding: 6px 12px 10px;
-  box-sizing: border-box;
-}
-.chip {
-  display: inline-flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 52px;
-  margin-right: 8px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  box-sizing: border-box;
-  vertical-align: top;
+  background: linear-gradient(145deg, #d84937, #a3281c);
+  box-shadow: 0 4px 10px rgba(163, 40, 28, 0.28);
 }
-.chip-g {
-  font-size: 10px;
-  line-height: 13px;
+.seal-t {
+  color: #ffffff;
+  font-family: 'zika-kai', 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 22px;
+}
+.brand-txt {
+  flex: 1;
+  min-width: 0;
+  margin-left: 11px;
+  display: flex;
+  flex-direction: column;
+}
+.brand-h1 {
+  font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #33322e;
+}
+.brand-sub {
+  display: none;
+}
+.stat {
+  display: flex;
+  align-items: baseline;
+  flex: none;
+  padding-left: 8px;
+}
+.stat-s {
+  font-size: 11px;
+  color: #c9973f;
+  margin-right: 2px;
+}
+.stat-n {
+  font-size: 15px;
+  font-weight: 700;
+  color: #a87c2c;
+}
+.stat-t {
+  font-size: 11px;
   color: #a9a296;
+  margin-left: 1px;
 }
-.chip-v {
-  font-size: 14px;
-  line-height: 18px;
-  font-weight: 600;
-  color: #5c574f;
+
+/* ---------- 控制区 ---------- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0 14px 8px;
 }
-.chip.on {
-  background: #ffffff;
-  border-color: #d94f3d;
-  box-shadow: 0 2px 8px rgba(43, 43, 43, 0.06);
+.sel {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  margin-bottom: 6px;
+  padding: 6px 13px;
+  border: 1.5px solid #e6ddc8;
+  border-radius: 999px;
+  background: #fffdf7;
 }
-.chip.on .chip-g {
-  color: #d94f3d;
-  opacity: 0.75;
+.sel-t {
+  font-size: 13.5px;
+  color: #33322e;
 }
-.chip.on .chip-v {
-  color: #d94f3d;
+.sel-jump .sel-t {
+  color: #6b675c;
+}
+.sel-caret {
+  font-size: 9px;
+  line-height: 9px;
+  color: #a9a296;
+  margin-left: 6px;
+}
+
+.tip {
+  padding: 0 14px 4px;
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: #6b675c;
+}
+.tip-b {
+  color: #a3281c;
+  font-weight: 700;
+  margin: 0 1px;
 }
 
 /* ---------- 课文分组 ---------- */
 .lessons {
-  padding: 0 16px;
+  padding: 6px 12px 0;
 }
-.ls-head {
+.lesson-title {
   display: flex;
   align-items: center;
-  margin: 16px 0 8px;
+  margin: 14px 0 10px;
+  padding: 8px 12px;
+  border-left: 4px solid #c9973f;
+  border-radius: 0 10px 10px 0;
+  background: linear-gradient(90deg, #f7ecd6, rgba(247, 236, 214, 0));
 }
-.ls-bar {
-  width: 3px;
-  height: 12px;
-  border-radius: 2px;
-  background: #d94f3d;
-  margin-right: 7px;
-}
-.ls-name {
+.lt-name {
+  flex: 1;
   font-size: 14px;
-  font-weight: 600;
-  color: #2b2b2b;
+  font-weight: 700;
+  color: #a3281c;
 }
-.ls-count {
-  margin-left: 7px;
+.lt-count {
+  flex: none;
   font-size: 11px;
-  color: #a9a296;
+  color: #6b675c;
+  background: #ffffff;
+  border: 1px solid #f0dfbc;
+  border-radius: 999px;
+  padding: 1px 9px;
 }
 
+/* ---------- 字卡 ---------- */
 .grid {
   display: flex;
   flex-wrap: wrap;
   margin: 0 -4px;
 }
-.cell {
+.card {
   position: relative;
-  width: calc(25% - 8px);
-  margin: 0 4px 8px;
-  padding: 10px 2px 7px;
   box-sizing: border-box;
+  margin: 0 4px 8px;
+  padding: 14px 4px 12px;
+  min-height: 152px;
+  border: 1.5px solid #e6ddc8;
+  border-radius: 12px;
+  background: #fffdf7;
+  box-shadow: 0 2px 6px rgba(90, 70, 30, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #f5efe5;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(43, 43, 43, 0.04);
 }
-.cell:active {
-  transform: scale(0.97);
+.card:active {
+  transform: translateY(-2px);
+  border-color: #d8c9a6;
+  box-shadow: 0 6px 18px rgba(90, 70, 30, 0.14);
 }
-.zi {
+.big {
   font-family: 'zika-kai', 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif;
-  font-size: 46px;
-  line-height: 50px;
-  font-weight: 400;
-  color: #2b2b2b;
+  font-size: 44px;
+  line-height: 54px;
+  font-weight: 700;
+  color: #33322e;
 }
-.py-wrap {
-  margin-top: 4px;
-  max-width: 100%;
+.pyrow {
   display: flex;
+  align-items: center;
   justify-content: center;
+  margin-top: 5px;
 }
-.spk {
-  margin-top: 3px;
-  width: 22px;
-  height: 22px;
+.sound {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
   border-radius: 50%;
-  background: #fdf3f0;
+  border: 1.5px solid #c9973f;
+  background: #f7ecd6;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.spk-i {
-  font-size: 12px;
-  line-height: 12px;
-  color: #c9756a;
+.sound:active {
+  background: #c9973f;
 }
-.cell.learned::after {
+.sound-i {
+  width: 11px;
+  height: 11px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgc3Ryb2tlPScjOEE2NDIwJyBzdHJva2Utd2lkdGg9JzIuMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJz48cGF0aCBkPSdNMTEgNSA2IDlIM3Y2aDNsNSA0VjV6Jy8+PHBhdGggZD0nTTE1LjUgOC41YTUgNSAwIDAgMSAwIDcnLz48cGF0aCBkPSdNMTguNSA1LjVhOSA5IDAgMCAxIDAgMTMnLz48L3N2Zz4=");
+}
+.words {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+.w {
+  font-size: 10px;
+  line-height: 14px;
+  color: #7a7465;
+  background: #f7ecd6;
+  border: 1px solid #f0dfbc;
+  border-radius: 999px;
+  padding: 1px 4px;
+  margin: 2px 1px 0;
+}
+/* 已学：右上角绿点（原版无此标记，属小程序新增的激励反馈） */
+.card.on::after {
   content: '';
   position: absolute;
-  top: 7px;
+  top: 6px;
   right: 7px;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #57a88f;
+  background: #5d8a66;
 }
 
 .tail {
-  padding: 18px 0 6px;
+  padding: 16px 0 4px;
   text-align: center;
   font-size: 11px;
-  color: #c1bab0;
+  color: #bdb5a4;
 }
-.tip {
+.hint {
   padding: 60px 0;
   text-align: center;
   font-size: 13px;
-  color: #a9a296;
+  color: #8a8378;
 }
 
-/* 平板：6 列 + 更大留白
-   不用 media query：小程序 wxss 的媒体查询在部分机型上不生效，
-   统一由 JS（getSystemInfo）判宽后挂 .pad，两端行为一致 */
-.page.pad .topbar {
-  padding: 16px 24px 8px;
+/* ============================================================
+   平板（≥600px）：6 列 + 原版桌面尺寸
+   不用 media query —— 小程序 wxss 的媒体查询在部分机型上不生效，
+   统一由 JS 判宽后挂 .pad，两端行为一致（DESIGN.md 9.6）
+   ============================================================ */
+.page.pad .brand {
+  padding: 16px 24px 10px;
 }
-.page.pad .books {
-  padding: 8px 20px 12px;
+.page.pad .seal {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+}
+.page.pad .seal-t {
+  font-size: 26px;
+  line-height: 26px;
+}
+.page.pad .brand-txt {
+  margin-left: 12px;
+}
+.page.pad .brand-h1 {
+  font-size: 20px;
+}
+.page.pad .brand-sub {
+  display: block;
+  font-size: 12px;
+  color: #6b675c;
+  margin-top: 1px;
+}
+.page.pad .controls {
+  padding: 0 24px 8px;
+}
+.page.pad .sel {
+  padding: 7px 14px;
+}
+.page.pad .sel-t {
+  font-size: 14px;
+}
+.page.pad .tip {
+  padding: 0 24px 4px;
+  font-size: 12px;
 }
 .page.pad .lessons {
-  padding: 0 24px;
+  padding: 10px 24px 0;
 }
-.page.pad .ls-head {
-  margin: 20px 0 10px;
+.page.pad .lesson-title {
+  margin: 20px 0 12px;
+  padding: 9px 14px;
+}
+.page.pad .lt-name {
+  font-size: 14.5px;
+}
+.page.pad .grid {
+  margin: 0 -7px;
+}
+.page.pad .card {
+  margin: 0 7px 14px;
+  padding: 24px 12px 18px;
+  min-height: 206px;
+  border-radius: 14px;
+}
+.page.pad .big {
+  font-size: 72px;
+  line-height: 84px;
+}
+.page.pad .sound {
+  width: 24px;
+  height: 24px;
+}
+.page.pad .sound-i {
+  width: 13px;
+  height: 13px;
+}
+.page.pad .w {
+  font-size: 11.5px;
+  line-height: 16px;
+  padding: 1px 8px;
+  margin: 2px 2px 0;
 }
 </style>

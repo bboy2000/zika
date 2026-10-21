@@ -1,32 +1,41 @@
 /**
- * zika 全局样式变量 —— 与 DESIGN.md v1.01 一一对应
- * 用法：页面 <style lang="scss"> 里 @import '@/uni.scss' 后直接用 $zk-*
+ * zika 全局样式变量 —— 与 DESIGN.md v2.00 一一对应
+ *
+ * v2.00 起视觉基线回到 Web 版（public/index.html v3.52）的「纸卷」体系：
+ * 米黄纸底 + 纸白卡片 + 朱砂印章 + 金色徽章。之前那套「现代白卡」已废弃。
+ * 原版令牌来源：public/index.html 的 :root 变量，色值逐一对应，不要凭感觉改。
+ *
+ * 用法：页面 <style lang="scss"> 里直接用 $zk-*
  * 规则：页面禁止硬编码色值，一律引用变量
  */
 
-/* 朱砂（主色，全局占比 ≤ 10%） */
-$zk-primary: #D94F3D;
-$zk-primary-deep: #B53A2B;
-$zk-primary-light: #FBE7E3;
-$zk-primary-wash: #FDF3F0;
+/* 朱砂（主色，全局占比 ≤ 10%）—— 原版 --accent / --accent-deep / --accent-soft */
+$zk-primary: #C93A2B;
+$zk-primary-deep: #A3281C;
+$zk-primary-light: #F9E9E4;
+$zk-primary-wash: #FCF2EE;
 
-/* 奖励金（只用于激励元素） */
-$zk-gold: #F2B230;
-$zk-gold-deep: #D9941C;
-$zk-gold-light: #FEF4DE;
+/* 奖励金（激励元素、组词胶囊、课文标题条）—— 原版 --gold / --gold-soft */
+$zk-gold: #C9973F;
+$zk-gold-deep: #A87C2C;
+$zk-gold-light: #F7ECD6;
+/* 组词胶囊描边，比金更浅一档（原版写死的 #f0dfbc） */
+$zk-gold-line: #F0DFBC;
 
-/* 纸与墨 */
-$zk-bg: #FDF9F3;
-$zk-card: #FFFFFF;
-$zk-text: #2B2B2B;
-$zk-text-2: #5C574F;
+/* 纸与墨 —— 原版 --bg / --paper / --ink / --ink-soft / --line */
+$zk-bg: #F6F1E5;
+$zk-card: #FFFDF7;
+$zk-text: #33322E;
+$zk-text-2: #6B675C;
 $zk-sub: #8A8378;
-$zk-line: #EDE6DA;
-$zk-line-soft: #F5EFE5;
+$zk-line: #E6DDC8;
+$zk-line-soft: #F0E9D8;
 
 /* 格线（两种格必须两种色，否则糊成一块） */
-$zk-grid: #E3B3AA;     /* 田字格：极淡朱砂 */
-$zk-py-line: #B9C6D6;  /* 四线三格：淡钢蓝 */
+$zk-grid: #D9C69A;     /* 田字格：暖金细线（原版 #d9c69a，斜线 #efe4c4） */
+$zk-grid-diag: #EFE4C4;
+$zk-py-line: #B8C8DC;  /* 四线三格：淡钢蓝（原版 #b8c8dc） */
+$zk-py-ink: #2B2F36;   /* 拼音字色：深墨，不是灰褐（原版 .py-text color） */
 
 /* 字体
    汉字必须楷体——生字用黑体是识字教学上的硬错（无顿笔无收锋，对不上笔顺）
@@ -34,13 +43,15 @@ $zk-py-line: #B9C6D6;  /* 四线三格：淡钢蓝 */
 $zk-font-hanzi: "zika-kai", "Kaiti SC", "STKaiti", "KaiTi", "楷体", serif;
 $zk-font-ui: "PingFang SC", "HarmonyOS Sans SC", "Source Han Sans SC",
              "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+/* 标题用衬线，才有书卷气（原版 .brand h1 用 Noto Serif SC） */
+$zk-font-title: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
 $zk-font-py: Arial, Helvetica, "Helvetica Neue", sans-serif;
 
 /* 语义（答错用 warn，不用红） */
-$zk-success: #57A88F;
-$zk-success-light: #E8F4F0;
-$zk-warn: #E8A33D;
-$zk-warn-light: #FDF2E0;
+$zk-success: #5D8A66;
+$zk-success-light: #E7F0E6;
+$zk-warn: #C9973F;
+$zk-warn-light: #F7ECD6;
 
 /* 间距基数 4 */
 $zk-sp-1: 4px;
@@ -51,30 +62,36 @@ $zk-sp-5: 24px;
 $zk-sp-6: 32px;
 $zk-sp-7: 48px;
 
-/* 圆角 */
+/* 圆角 —— 原版卡片 14px（手机 12px），弹窗 20px（手机 16px） */
 $zk-r-sm: 8px;
 $zk-r-md: 12px;
-$zk-r-lg: 16px;
+$zk-r-lg: 14px;
 $zk-r-xl: 20px;
 $zk-r-full: 999px;
 
-/* 阴影 */
-$zk-sh-sm: 0 1px 2px rgba(43, 43, 43, .04);
-$zk-sh-md: 0 2px 8px rgba(43, 43, 43, .06), 0 1px 2px rgba(43, 43, 43, .04);
-$zk-sh-lg: 0 8px 24px rgba(43, 43, 43, .10), 0 2px 6px rgba(43, 43, 43, .05);
-$zk-sh-gold: 0 4px 14px rgba(242, 178, 48, .32);
+/* 阴影 —— 原版是暖棕投影，不是中性灰，这是纸感的关键 */
+$zk-sh-sm: 0 2px 6px rgba(90, 70, 30, .06);
+$zk-sh-md: 0 6px 18px rgba(90, 70, 30, .10);
+$zk-sh-lg: 0 24px 60px rgba(0, 0, 0, .30);
+$zk-sh-gold: 0 4px 14px rgba(201, 151, 63, .28);
+$zk-sh-seal: 0 4px 10px rgba(163, 40, 28, .28);
 
-/* 字号（全部 px，不随屏缩放） */
-$zk-fs-hanzi-card: 52px;   /* 列表卡片汉字（楷体 400，不加重） */
+/* 字号（全部 px，不随屏缩放）
+   卡片主字：手机 44px / 平板 58px（原版 @media 640 断点，
+   小程序不用媒体查询，由 .pad class 切换） */
+$zk-fs-hanzi-card: 44px;
+$zk-fs-hanzi-card-pad: 58px;
 $zk-fs-display: 22px;
 $zk-fs-title: 17px;
 $zk-fs-body: 15px;
 $zk-fs-caption: 13px;
 $zk-fs-micro: 11px;
 
-/* 四线三格（v1.02：格高取 3 的倍数，四条线一律 1px 纯色背景层，位置用 px）
-   字号 = 中格高 ÷ 0.519，使 x-height 填满中格；nudge 让基线压在第 3 条线（实测值） */
-$zk-pg-sm-h: 27px;  $zk-pg-sm-fs: 16.5px;  $zk-pg-sm-lh: 26px;  $zk-pg-sm-nudge: -1.3px;
+/* 四线三格（格高取 3 的倍数，四条线一律 1px 纯色背景层，位置用 px）
+   字号 = 中格高 ÷ 0.519，使 x-height 填满中格
+   nudge 让基线压在第 3 条线，算法与原版 pyGridHTML 一致：
+     baseline = (H - F) / 2 + F * 0.905，shift = baseline - H * 2 / 3 */
+$zk-pg-sm-h: 27px;  $zk-pg-sm-fs: 16px;    $zk-pg-sm-lh: 26px;  $zk-pg-sm-nudge: -2px;
 $zk-pg-sm-l1: 9px;  $zk-pg-sm-l2: 18px;  $zk-pg-sm-l3: 26px;
 $zk-pg-md-h: 36px;  $zk-pg-md-fs: 21.5px;  $zk-pg-md-lh: 34px;  $zk-pg-md-nudge: -0.3px;
 $zk-pg-md-l1: 12px; $zk-pg-md-l2: 24px;  $zk-pg-md-l3: 35px;

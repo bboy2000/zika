@@ -3,25 +3,30 @@
     <view class="zd-mask" @tap="onClose"></view>
 
     <view class="zd-sheet" :class="isPad ? 'is-pad' : 'is-phone'">
-      <!-- head 固定：拼音格 + 发音 + 关闭 / 部首·结构·出处 -->
+      <!-- head 固定：朱红大字 + 拼音格 + 部首·结构·出处（结构对齐原版 .modal-head） -->
       <view class="zd-head">
-        <view class="zd-hrow">
-          <view class="zd-py">
-            <zk-py :text="item.py" size="md" />
+        <view class="zd-big">
+          <text class="zd-big-t">{{ item.ch }}</text>
+        </view>
+        <view class="zd-head-r">
+          <view class="zd-hrow">
+            <view class="zd-py">
+              <zk-py :text="item.py" size="md" />
+            </view>
+            <view class="zd-spk" @tap="$emit('speak')">
+              <view class="zd-spk-i"></view>
+            </view>
           </view>
-          <view class="zd-spk" @tap="$emit('speak')">
-            <text class="zd-spk-i">♪</text>
-          </view>
-          <view class="zd-close" @tap="onClose">
-            <text class="zd-close-i">✕</text>
+          <view class="zd-meta">
+            <text class="zd-meta-i">部首 {{ meta.radical || '—' }}</text>
+            <text class="zd-dot">·</text>
+            <text class="zd-meta-i">{{ meta.struct || '—' }}</text>
+            <text class="zd-dot">·</text>
+            <text class="zd-meta-i">{{ item.lesson }}</text>
           </view>
         </view>
-        <view class="zd-meta">
-          <text class="zd-meta-i">部首 {{ meta.radical || '—' }}</text>
-          <text class="zd-dot">·</text>
-          <text class="zd-meta-i">{{ meta.struct || '—' }}</text>
-          <text class="zd-dot">·</text>
-          <text class="zd-meta-i">{{ item.lesson }}</text>
+        <view class="zd-close" @tap="onClose">
+          <text class="zd-close-i">✕</text>
         </view>
       </view>
 
@@ -124,8 +129,12 @@ export default {
   bottom: 0;
   z-index: 900;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  /* 居中弹窗：四周留白 16px，同原版 #mask。
+     居中而不是贴底，是为了不被原生 tabBar 压住底栏按钮。 */
+  padding: 16px;
+  box-sizing: border-box;
 }
 .zd-root.pad {
   align-items: center;
@@ -146,55 +155,95 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-  background: #ffffff;
-  overflow: hidden; /* 铁律：不加会让内部背景溢出，平板圆角变直角 */
+  background: #fffdf7;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden; /* 铁律：不加会让内部背景溢出，圆角变直角 */
+  animation: zdPop 0.22s ease both;
 }
+/* 手机与平板同一套结构，只是尺寸不同（原版 #modal 手机 16px 圆角、桌面 20px） */
 .zd-sheet.is-phone {
-  max-height: 94%;
-  border-radius: 20px 20px 0 0;
-  animation: zdUp 0.22s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+  max-width: 100%;
+  max-height: 86%;
+  border-radius: 16px;
 }
 .zd-sheet.is-pad {
-  max-width: 560px;
+  max-width: 520px;
   max-height: 86%;
-  border-radius: 24px;
-  animation: zdIn 0.24s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+  border-radius: 20px;
 }
 
-/* head */
+/* head：大红字在左，右边一列拼音 + 出处 */
 .zd-head {
   flex: none;
-  padding: 16px 16px 12px;
-  border-bottom: 1px solid #f5efe5;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid #f0e9d8;
+}
+.zd-big {
+  flex: none;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zd-big-t {
+  /* flex:none 必须给，否则 text 会被 flex 压窄，字变瘦长 */
+  flex: none;
+  font-family: 'zika-kai', 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif;
+  font-size: 60px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #a3281c;
+}
+.zd-head-r {
+  flex: 1;
+  min-width: 0;
+  margin-left: 14px;
+  padding-right: 34px; /* 给右上角关闭钮让位 */
 }
 .zd-hrow {
   display: flex;
   align-items: center;
 }
 .zd-py {
-  min-width: 46px;
+  flex: none;
 }
 .zd-spk {
-  margin-left: 10px;
-  width: 30px;
-  height: 30px;
+  flex: none;
+  margin-left: 8px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: #fdf3f0;
+  background: #fcf2ee;
+  border: 1px solid #f0dfbc;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .zd-spk-i {
-  font-size: 14px;
-  line-height: 14px;
-  color: #d94f3d;
+  width: 14px;
+  height: 14px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nbm9uZScgc3Ryb2tlPScjQzkzQTJCJyBzdHJva2Utd2lkdGg9JzIuMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJz48cGF0aCBkPSdNMTEgNSA2IDlIM3Y2aDNsNSA0VjV6Jy8+PHBhdGggZD0nTTE1LjUgOC41YTUgNSAwIDAgMSAwIDcnLz48cGF0aCBkPSdNMTguNSA1LjVhOSA5IDAgMCAxIDAgMTMnLz48L3N2Zz4=");
+}
+.zd-root.pad .zd-big {
+  width: 74px;
+}
+.zd-root.pad .zd-big-t {
+  font-size: 72px;
 }
 .zd-close {
-  margin-left: auto;
-  width: 29px;
-  height: 29px;
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #d94f3d;
+  background: #c93a2b;
+  box-shadow: 0 2px 8px rgba(201, 58, 43, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -207,15 +256,16 @@ export default {
 .zd-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   margin-top: 8px;
 }
 .zd-meta-i {
   font-size: 12px;
-  color: #8a8378;
+  color: #6b675c;
 }
 .zd-dot {
   font-size: 12px;
-  color: #d8d1c6;
+  color: #bdb5a4;
   margin: 0 6px;
 }
 
@@ -240,8 +290,8 @@ export default {
   height: 38px;
   margin: 0 4px;
   border-radius: 10px;
-  background: #fbf7f0;
-  border: 1px solid #f0e9dd;
+  background: #fffdf7;
+  border: 1px solid #e6ddc8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -251,7 +301,7 @@ export default {
 }
 .zd-nav-t {
   font-size: 13px;
-  color: #5c574f;
+  color: #6b675c;
 }
 
 .zd-block {
@@ -263,7 +313,7 @@ export default {
 .zd-block-t {
   font-size: 12px;
   font-weight: 600;
-  color: #8a8378;
+  color: #6b675c;
   letter-spacing: 1px;
 }
 .zd-words {
@@ -274,20 +324,20 @@ export default {
   padding: 6px 12px;
   margin: 0 8px 8px 0;
   border-radius: 999px;
-  background: #f7f2ea;
+  background: #f0e9d8;
 }
 .zd-word-t {
   font-size: 14px;
-  color: #5c574f;
+  color: #6b675c;
 }
 .zd-empty {
   font-size: 13px;
-  color: #b5aea2;
+  color: #a9a296;
 }
 .zd-exp {
   font-size: 13px;
   line-height: 1.75;
-  color: #5c574f;
+  color: #6b675c;
 }
 
 /* foot */
@@ -298,21 +348,21 @@ export default {
   padding: 10px 16px;
   padding-bottom: calc(10px + constant(safe-area-inset-bottom));
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
-  border-top: 1px solid #f5efe5;
-  background: #fffdfa;
+  border-top: 1px solid #f0e9d8;
+  background: #fffdf7;
 }
 .zd-btn-main {
   flex: 1;
   height: 44px;
   border-radius: 12px;
-  background: #f2b230;
+  background: #c9973f;
   box-shadow: 0 4px 14px rgba(242, 178, 48, 0.32);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .zd-btn-main.done {
-  background: #e8f4f0;
+  background: #e7f0e6;
   box-shadow: none;
 }
 .zd-btn-main-t {
@@ -321,7 +371,7 @@ export default {
   color: #ffffff;
 }
 .zd-btn-main.done .zd-btn-main-t {
-  color: #57a88f;
+  color: #5d8a66;
 }
 .zd-btn-sub {
   margin-left: 10px;
@@ -329,21 +379,21 @@ export default {
   height: 44px;
   border-radius: 12px;
   background: #ffffff;
-  border: 1px solid #ede6da;
+  border: 1px solid #e6ddc8;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .zd-btn-sub.on {
-  border-color: #d94f3d;
-  background: #fdf3f0;
+  border-color: #c93a2b;
+  background: #fcf2ee;
 }
 .zd-btn-sub-t {
   font-size: 13px;
-  color: #5c574f;
+  color: #6b675c;
 }
 .zd-btn-sub.on .zd-btn-sub-t {
-  color: #d94f3d;
+  color: #c93a2b;
 }
 
 @keyframes zdMaskIn {
@@ -351,6 +401,16 @@ export default {
     opacity: 0;
   }
   to {
+    opacity: 1;
+  }
+}
+@keyframes zdPop {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
     opacity: 1;
   }
 }
