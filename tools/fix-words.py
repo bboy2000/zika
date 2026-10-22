@@ -22,10 +22,12 @@ import os
 import sys
 
 from pypinyin import lazy_pinyin, Style
+from pypinyin.contrib.tone_convert import to_tone3
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "public", "chars.json")
 JIEBA = os.path.join(ROOT, "tools", "jieba_dict.txt")
+PHRASE = os.path.join(ROOT, "tools", "phrase-pinyin.txt")
 REPORT = os.path.join(ROOT, "design", "words-report.md")
 REVIEW = os.path.join(ROOT, "design", "words-review.md")
 
@@ -51,6 +53,8 @@ SOFT_PENALTY = 8.0
 ALLOW_SOFT = set("""
 太阳 阳光 明白 你好 一共 一定 一样 一起 一些 一直 一般 一向 一切 一边 一头 一半
 一同 一贯 一心 一时 一早 一流 一流 两下 两家 分工 明明 光明 明天 明日 明智
+卡片 宁可 宁愿 木耳 白云 西瓜 南瓜 黄瓜 荷花 桃花 梅花 兰花 桂花 樱花 菊花
+丁香 海棠 竹子 松树 柏树 梧桐 杨柳 燕子 孔雀 鸳鸯 海鸥 骆驼 蚂蚁 蜻蜓
 """.split())
 
 MIN_FREQ = 20            # 词频下限：低于此值基本是人名/地名/生造词的残留
@@ -58,6 +62,20 @@ GRADE_PENALTY = 6.0      # 每超出「本字年级+1」一级扣多少分（重
 
 # 变调字：一、不 的声调会随下文变化（一起 yi4、不是 bu2），不能拿本课声调硬卡
 SANDBOX_CHARS = {"一", "不"}
+
+# 文白异读：两读都规范（谁 shuí/shéi、那 nà/nèi），词组库只收其中一个时不该判错
+READING_VARIANTS = {
+    "谁": {"shui", "shei"},
+    "那": {"na", "nei"},
+    "哪": {"na", "nei"},
+    "血": {"xue", "xie"},
+    "薄": {"bao", "bo"},
+    "熟": {"shu", "shou"},
+    "色": {"se", "shai"},
+    "角": {"jiao", "jue"},
+    "给": {"gei", "ji"},
+    "嚼": {"jiao", "jue"},
+}
 
 # 敏感词 / 不适合儿童 / 专名漏网 的手工黑名单
 BLACKLIST = {
@@ -81,6 +99,65 @@ BLACKLIST = {
 # 人工校对表：优先级最高，出现即采用，**不受词库收录与黑名单限制**，只校验读音
 # 一年级写字表 300 字全量人工校对；其余年级靠词频 + 年级加权自动选取
 OVERRIDE_FILE = os.path.join(ROOT, "tools", "word-override.json")
+
+
+def load_phrase():
+    """phrase-pinyin-data（4.7 万词组带拼音），比 pypinyin 内置词典准得多"""
+    lib = {}
+    if not os.path.exists(PHRASE):
+        return lib
+    for line in open(PHRASE, encoding="utf-8"):
+        line = line.strip()
+        if not line or line.startswith("#") or ":" not in line:
+            continue
+        w, p = line.split(":", 1)
+        lib[w.strip()] = p.split()
+    return lib
+
+
+PHRASE_LIB = {}
+
+
+def override_words(ch, base, tone):
+    """人工表也要过读音校验
+
+    曾踩过的坑：人工表被设计成「完全不做校验」，我凭印象给生僻字补词，
+    结果「乐→音乐(yuè)」「兴→兴奋(xīng)」「空→有空(kòng)」「卜→占卜(bǔ)」
+    这些跨读音的词全混进了数据。
+    校验源用词组库；库里没有的词（如「好哇」）无从判断，放行。
+    """
+    out = []
+    for w in OVERRIDE.get(ch, []):
+        if ch not in w:
+            continue
+        # 「一」「不」是变调不是多音字（一个 yí、不是 bú），直接放行
+        if ch in SANDBOX_CHARS:
+            out.append(w)
+            continue
+        pys = PHRASE_LIB.get(w)
+        if pys and len(pys) == len(w):
+            got = []
+            for i, c in enumerate(w):
+                if c != ch:
+                    continue
+                got.append(to_tone3(pys[i]))
+            want = f"{base}{tone}" if tone else base
+            # 轻声本课（tone=0）只要求音节对上
+            ok = any(g == want or (tone == 0 and g.rstrip("012345") == base)
+                     for g in got)
+            # 库里给的是轻声、本课标了调（儿子 zi / 尾巴 ba / 意思 si）——同一音节，
+            # 只是语流弱化，不算错，放行
+            if not ok:
+                ok = any(g.rstrip("012345") == base and not g[-1].isdigit()
+                         for g in got)
+            # 文白异读（谁 shuí / shéi、那 nà / nèi）两读都规范，放行
+            if not ok and ch in READING_VARIANTS:
+                ok = any(g.rstrip("012345") in READING_VARIANTS[ch] for g in got)
+            if not ok and got:
+                print(f"[人工表读音不符] {ch} {w}：库读 {'/'.join(got)}，本课 {want}")
+                continue
+        out.append(w)
+    return out
 
 
 def load_override():
@@ -198,7 +275,7 @@ def pick(ch, py, words, idx, grade_of, base_tone, n=3):
     #    进了人工表的字**完全由人工表决定**，不再自动补位（否则第 3 个槽位会把
     #    「蒋丽莉」「曹雪芹」这类人名补进来）；写成 [] 表示该字没有常用组词
     if ch in OVERRIDE:
-        return [w for w in OVERRIDE[ch] if ch in w]
+        return override_words(ch, base, tone)
 
     # 2) 词频候选
     for w in idx.get(ch, []):
@@ -275,6 +352,8 @@ def pick(ch, py, words, idx, grade_of, base_tone, n=3):
 
 def main():
     apply = "--apply" in sys.argv
+    global PHRASE_LIB
+    PHRASE_LIB = load_phrase()
     words = load_jieba(JIEBA)
     idx = build_index(words)
     grade_of = load_char_grade()
@@ -325,7 +404,12 @@ def main():
             json.dump(src, f, ensure_ascii=False, separators=(",", ":"))
         print("[写回]", SRC)
         # 同步重建小程序端 12 册 + dict.json
-        rc = os.system(f'"{sys.executable}" "{os.path.join(ROOT, "tools", "build-data.py")}"')
+        # 注意：不能用 os.system——Windows 下带中文的路径拼进 cmd 会乱码报
+        # 「文件名、目录名或卷标语法不正确」
+        import subprocess
+        rc = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "tools", "build-data.py")],
+            cwd=ROOT).returncode
         print("[重建小程序数据] 退出码", rc)
 
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)

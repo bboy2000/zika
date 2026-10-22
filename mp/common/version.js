@@ -2,7 +2,7 @@
  * 全局版本号：每次改动递增（P0 = v0.1.0）
  * 规则：改动提交信息与本文件版本号必须一致
  */
-export const APP_VERSION = 'v0.2.1'
+export const APP_VERSION = 'v0.2.2'
 
 /**
  * 设计令牌 —— 与 DESIGN.md v2.00 一一对应
@@ -66,6 +66,12 @@ export const SHEET = {
 }
 
 /** 列表列数：课本每课 4 或 8 字，只有 4 列能让两种课都排满 */
+/** 多音字（P2）：单字最多展示几个读音 / 每读音最多几个组词 */
+export const MULTI = {
+  maxReadings: 3,
+  wordsPerReading: 3
+}
+
 export const GRID_COLS = { phone: 4, pad: 4 }
 
 /** 激励等级阶梯（累计字数达标晋级） */

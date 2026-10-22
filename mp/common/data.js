@@ -59,6 +59,13 @@ export const loadBook = (id) => loadJSON('static/data/books/' + id + '.json')
 /** 字库：{radicals,explanations,multi} */
 export const loadDict = () => loadJSON('static/data/dict.json')
 
+/**
+ * 多音字表（P2 重建，tools/build-multi.py 产出）
+ * { _meta:{version,count}, chars:{ 字: [{py,tone3,isLesson,support,lessons,words}] } }
+ * 与主数据分离：主库每字只标本课读音，这里补全该字的其他常用读音。
+ */
+export const loadMulti = () => loadJSON('static/data/multi_v2.json')
+
 /** 册 id → {grade:'一年级', vol:'上册'} */
 export function splitLabel(label) {
   const g = label.slice(0, 3)

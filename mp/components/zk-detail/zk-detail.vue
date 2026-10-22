@@ -57,6 +57,35 @@
           </view>
         </view>
 
+        <!-- 多音字：每个读音独立一组（P2 重建，见 tools/build-multi.py） -->
+        <view v-if="multi && multi.length" class="zd-block">
+          <view class="zd-block-h">
+            <text class="zd-block-t">多音字</text>
+            <text class="zd-block-hint">这个字有几个读音</text>
+          </view>
+          <view class="zd-multi">
+            <view
+              v-for="(r, ri) in multi"
+              :key="ri"
+              class="zd-mrow"
+              :class="{ on: r.isLesson }"
+            >
+              <view class="zd-mhead">
+                <view class="zd-mpy">
+                  <zk-py :text="r.py" size="sm" />
+                </view>
+                <text v-if="r.isLesson" class="zd-mtag">本课</text>
+              </view>
+              <view class="zd-mwords">
+                <view v-for="(w, wi) in r.words" :key="wi" class="zd-mword">
+                  <text class="zd-mword-t">{{ w }}</text>
+                </view>
+              </view>
+              <text v-if="r.from" class="zd-mfrom">{{ r.from }}</text>
+            </view>
+          </view>
+        </view>
+
         <view v-if="item.exp" class="zd-block">
           <view class="zd-block-h">
             <text class="zd-block-t">释义</text>
@@ -98,6 +127,8 @@ export default {
   props: {
     show: { type: Boolean, default: false },
     item: { type: Object, default: () => ({ ch: '', py: '', words: [], lesson: '', exp: '' }) },
+    /** 该字的多音字读音组，空数组表示不是多音字 */
+    multi: { type: Array, default: () => [] },
     meta: { type: Object, default: () => ({}) },
     learned: { type: Boolean, default: false },
     inBook: { type: Boolean, default: false },
@@ -235,6 +266,12 @@ export default {
 .zd-root.pad .zd-big-t {
   font-size: 72px;
 }
+.zd-root.pad .zd-mword-t {
+  font-size: 15px;
+}
+.zd-root.pad .zd-mfrom {
+  font-size: 12px;
+}
 .zd-close {
   position: absolute;
   top: 10px;
@@ -332,6 +369,68 @@ export default {
 }
 .zd-empty {
   font-size: 13px;
+  color: #a9a296;
+}
+.zd-block-hint {
+  margin-left: 8px;
+  font-size: 11px;
+  color: #a9a296;
+}
+/* 多音字：一读音一行的分组卡片，本课读音朱砂淡底高亮 */
+.zd-multi {
+  border: 1.5px solid #e6ddc8;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fffdf7;
+}
+.zd-mrow {
+  padding: 10px 12px 8px;
+  border-top: 1px dashed #ece3cf;
+}
+.zd-mrow:first-child {
+  border-top: 0;
+}
+.zd-mrow.on {
+  background: #fcf2ee;
+}
+.zd-mhead {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.zd-mpy {
+  margin-right: 8px;
+}
+.zd-mtag {
+  font-size: 10px;
+  line-height: 14px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #c93a2b;
+  background: #f9e9e4;
+  border: 1px solid #f0d5cd;
+}
+.zd-mwords {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.zd-mword {
+  padding: 3px 9px;
+  margin: 0 6px 4px 0;
+  border-radius: 999px;
+  background: #f7ecd6;
+  border: 1px solid #f0dfbc;
+}
+.zd-mword-t {
+  font-size: 13px;
+  color: #33322e;
+}
+.zd-mfrom {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
   color: #a9a296;
 }
 .zd-exp {

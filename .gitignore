@@ -8,3 +8,10 @@ mp/.build-h5.log
 node_modules/
 .DS_Store
 Thumbs.db
+
+# 第三方词库（tools/*.py 脚本依赖）。jieba_dict.txt 在 v0.2.1 已入库，保持原样；
+# 下面两个各 1MB 左右，本地按需下载，不进仓库：
+#   词组拼音  https://cdn.jsdelivr.net/gh/mozillazg/phrase-pinyin-data@master/pinyin.txt
+#   单字拼音  https://cdn.jsdelivr.net/gh/mozillazg/pinyin-data@master/pinyin.txt
+tools/phrase-pinyin.txt
+tools/pinyin-data.txt

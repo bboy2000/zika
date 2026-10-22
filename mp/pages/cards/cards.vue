@@ -73,6 +73,7 @@
       :show="sheetShow"
       :item="cur"
       :meta="meta"
+      :multi="curMulti"
       :learned="curLearned"
       :in-book="curInBook"
       :is-pad="isPad"
@@ -89,7 +90,7 @@
 </template>
 
 <script>
-import { loadIndex, loadBook, loadDict, splitLabel, cleanExplanation } from '@/common/data.js'
+import { loadIndex, loadBook, loadDict, loadMulti, splitLabel, cleanExplanation } from '@/common/data.js'
 import * as store from '@/common/store.js'
 import zkPy from '@/components/zk-py/zk-py.vue'
 import zkDetail from '@/components/zk-detail/zk-detail.vue'
@@ -113,9 +114,11 @@ export default {
       curIdx: -1,
       cur: { ch: '', py: '', words: [], lesson: '', exp: '' },
       meta: {},
+      curMulti: [],
       curLearned: false,
       curInBook: false,
       dict: null,
+      multiMap: null,
       isPad: false,
       vw: 0
     }
@@ -288,6 +291,31 @@ export default {
       return this.dict
     },
 
+    /** 多音字表：独立文件，按需加载一次 */
+    async ensureMulti() {
+      if (this.multiMap) return this.multiMap
+      try {
+        const d = await loadMulti()
+        this.multiMap = (d && d.chars) || {}
+      } catch (e) {
+        this.multiMap = {}
+      }
+      return this.multiMap
+    },
+
+    /** 把 [[册,课],...] 拼成「二年级上册 · 课文1」 */
+    multiReadings(ch) {
+      const rows = this.multiMap && this.multiMap[ch]
+      if (!rows || !rows.length) return []
+      return rows.map((r) => {
+        const ls = r.lessons || []
+        const from = ls.length
+          ? ls.slice(0, 2).map((x) => x[0][0] + x[0].slice(3, 4) + ' · ' + x[1]).join('；')
+          : ''
+        return { py: r.py, isLesson: !!r.isLesson, words: r.words || [], from }
+      })
+    },
+
     async openAt(idx) {
       const c = this.flat[idx]
       if (!c) return
@@ -299,10 +327,12 @@ export default {
       this.sheetShow = true
 
       const d = await this.ensureDict()
+      await this.ensureMulti()
       // 字典异步加载期间可能已翻到别的字，只认当前这个
       if (this.cur.ch !== c.ch) return
       this.meta = (d.radicals && d.radicals[c.ch]) || {}
       const exp = cleanExplanation(d.explanations && d.explanations[c.ch])
+      this.curMulti = this.multiReadings(c.ch)
       this.cur = { ...this.cur, exp }
     },
 
