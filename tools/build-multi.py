@@ -76,14 +76,31 @@ def norm_tone3(token):
 
 
 def load_lessons():
-    """字 -> [{book, name, py}]，同一字可能出现多次"""
+    """字 -> [{book, name, py, words}]，同一字可能出现多次"""
     out = collections.defaultdict(list)
     data = json.load(open(SRC, encoding="utf-8"))
     for bid in data["order"]:
         b = data["books"][bid]
         for name, items in b["lessons"]:
             for it in items:
-                out[it[0]].append({"book": b["label"], "name": name, "py": it[1]})
+                out[it[0]].append({"book": b["label"], "name": name, "py": it[1],
+                                   "words": it[2]})
+    return out
+
+
+def lesson_words(lessons, ch, t3):
+    """本课读音的组词：直接取小卡片那份，两边显示同一套词
+
+    主库由 fix-words.py 采词并经人工表校对，是孩子第一眼看到的版本；
+    详情页若再采一次就会出现「小卡片写一个/半个/个子、详情写一个/两个/几个」。
+    """
+    out = []
+    for l in lessons.get(ch, []):
+        if to_tone3(l["py"]) != t3:
+            continue
+        for w in (l.get("words") or []):
+            if ch in w and w not in out:
+                out.append(w)
     return out
 
 
@@ -230,6 +247,12 @@ def main():
             ov = override.get(ch, {}).get(t3)
             if ov is not None:
                 ws = [w for w in ov if ch in w and phrase_ok(w, ch, t3)]
+            elif is_lesson:
+                ws = [w for w in lesson_words(lessons, ch, t3) if phrase_ok(w, ch, t3)]
+                if not ws:      # 主库里这三个字本来就没组词（哦/哩），退回自动采
+                    base, tone = norm_tone3(t3)
+                    ws = score_words(ch, buckets.get(t3, []), grade_of, base, tone,
+                                     WORDS_PER_READING)
             else:
                 base, tone = norm_tone3(t3)
                 ws = score_words(ch, buckets.get(t3, []), grade_of, base, tone,
