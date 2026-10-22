@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import { loadIndex, loadBook, loadDict, loadMulti, splitLabel, cleanExplanation } from '@/common/data.js'
+import { loadIndex, loadBook, loadDict, loadMulti, loadDefs, splitLabel } from '@/common/data.js'
 import * as store from '@/common/store.js'
 import zkPy from '@/components/zk-py/zk-py.vue'
 import zkDetail from '@/components/zk-detail/zk-detail.vue'
@@ -112,13 +112,14 @@ export default {
       learnedCount: 0,
       sheetShow: false,
       curIdx: -1,
-      cur: { ch: '', py: '', words: [], lesson: '', exp: '' },
+      cur: { ch: '', py: '', words: [], lesson: '', defs: [] },
       meta: {},
       curMulti: [],
       curLearned: false,
       curInBook: false,
       dict: null,
       multiMap: null,
+      defsMap: null,
       isPad: false,
       vw: 0
     }
@@ -303,6 +304,18 @@ export default {
       return this.multiMap
     },
 
+    /** 释义表：独立文件，按需加载一次（P2.5 重采，已清洗） */
+    async ensureDefs() {
+      if (this.defsMap) return this.defsMap
+      try {
+        const d = await loadDefs()
+        this.defsMap = (d && d.chars) || {}
+      } catch (e) {
+        this.defsMap = {}
+      }
+      return this.defsMap
+    },
+
     /** 把 [[册,课],...] 拼成「二年级上册 · 课文1」 */
     multiReadings(ch) {
       const rows = this.multiMap && this.multiMap[ch]
@@ -320,7 +333,7 @@ export default {
       const c = this.flat[idx]
       if (!c) return
       this.curIdx = idx
-      this.cur = { ...c, exp: '' }
+      this.cur = { ...c, defs: [] }
       this.meta = {}
       this.curLearned = store.isLearned(c.ch)
       this.curInBook = store.inWordbook(c.ch)
@@ -328,12 +341,13 @@ export default {
 
       const d = await this.ensureDict()
       await this.ensureMulti()
+      const defs = await this.ensureDefs()
       // 字典异步加载期间可能已翻到别的字，只认当前这个
       if (this.cur.ch !== c.ch) return
       this.meta = (d.radicals && d.radicals[c.ch]) || {}
-      const exp = cleanExplanation(d.explanations && d.explanations[c.ch])
+      const row = defs[c.ch]
       this.curMulti = this.multiReadings(c.ch)
-      this.cur = { ...this.cur, exp }
+      this.cur = { ...this.cur, defs: (row && row.defs) || [] }
     },
 
     syncCurState() {

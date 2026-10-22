@@ -74,16 +74,11 @@ export function splitLabel(label) {
 }
 
 /**
- * 释义数据清洗（旧库是词典拼接，含 ∪ 『 等残留与截断拼音）
- * P2 会整体重采，这里先做闸门：不合格就返回空，宁可不显示也不给孩子看乱码
+ * 释义表（P2.5 重采，tools/build-defs.py 产出）
+ * { version, chars:{ 字: {py, defs:[义项...], src} } }
+ *
+ * 为什么新开一张表而不复用 dict.json 的 explanations：
+ * 旧库是古汉语字典抓取残留（111 字缺失、328 条含〈古〉〈引〉标记、307 条引号错位），
+ * 清洗规则补不回来——只能重采。新表按「本课读音」取义项，与多音字表口径一致。
  */
-export function cleanExplanation(s) {
-  if (!s || typeof s !== 'string') return ''
-  if (/[∪『』\[\]\ufffd]/.test(s)) return ''
-  if (/^[a-zA-Zàáǎāèéěēìíǐīòóǒōùúǔūǖǘǚǜ]+\s*[；;]/.test(s)) return ''
-  let t = s.replace(/；/g, '；').replace(/\s+/g, ' ').trim()
-  // 只取第一条义项，旧数据多条拼接读起来很乱
-  const first = t.split('；')[0]
-  t = first.length > 40 ? first.slice(0, 40) + '…' : first
-  return t
-}
+export const loadDefs = () => loadJSON('static/data/defs_v2.json')

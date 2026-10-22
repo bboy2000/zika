@@ -86,11 +86,16 @@
           </view>
         </view>
 
-        <view v-if="item.exp" class="zd-block">
+        <view v-if="item.defs && item.defs.length" class="zd-block">
           <view class="zd-block-h">
             <text class="zd-block-t">释义</text>
           </view>
-          <text class="zd-exp">{{ item.exp }}</text>
+          <view class="zd-defs">
+            <view v-for="(d, di) in item.defs" :key="di" class="zd-def-row">
+              <text v-if="item.defs.length > 1" class="zd-def-no">{{ MARKS[di] || '·' }}</text>
+              <text class="zd-def-t">{{ d }}</text>
+            </view>
+          </view>
         </view>
       </scroll-view>
 
@@ -126,7 +131,7 @@ export default {
   components: { zkPy, zkTzg },
   props: {
     show: { type: Boolean, default: false },
-    item: { type: Object, default: () => ({ ch: '', py: '', words: [], lesson: '', exp: '' }) },
+    item: { type: Object, default: () => ({ ch: '', py: '', words: [], lesson: '', defs: [] }) },
     /** 该字的多音字读音组，空数组表示不是多音字 */
     multi: { type: Array, default: () => [] },
     meta: { type: Object, default: () => ({}) },
@@ -137,6 +142,12 @@ export default {
     canNext: { type: Boolean, default: false }
   },
   emits: ['close', 'prev', 'next', 'learned', 'wordbook', 'speak'],
+  data() {
+    return {
+      /** 义项序号：圆圈数字比「1.」更贴合课本，最多 4 条（数据层也限 2 条） */
+      MARKS: ['①', '②', '③', '④']
+    }
+  },
   methods: {
     onClose() {
       this.$emit('close')
@@ -433,7 +444,27 @@ export default {
   font-size: 11px;
   color: #a9a296;
 }
-.zd-exp {
+.zd-defs {
+  display: flex;
+  flex-direction: column;
+}
+.zd-def-row {
+  display: flex;
+  align-items: flex-start;
+}
+.zd-def-row + .zd-def-row {
+  margin-top: 3px;
+}
+/* 序号只在多条时出现：单条释义加序号是多余装饰 */
+.zd-def-no {
+  flex: none;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #c93a2b;
+  margin-right: 4px;
+}
+.zd-def-t {
+  flex: 1;
   font-size: 13px;
   line-height: 1.75;
   color: #6b675c;
