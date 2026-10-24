@@ -55,7 +55,7 @@
             <text class="big">{{ c.ch }}</text>
             <view class="pyrow">
               <zk-py :text="c.py" size="sm" />
-              <view class="sound" @tap.stop="speak">
+              <view class="sound" @tap.stop="speak({ kind: 'char', ch: c.ch, py: c.py })">
                 <view class="sound-i"></view>
               </view>
             </view>
@@ -91,6 +91,7 @@
 
 <script>
 import { loadIndex, loadBook, loadDict, loadMulti, loadDefs, splitLabel } from '@/common/data.js'
+import { speakAudio, charKey, wordKey } from '@/common/audio.js'
 import * as store from '@/common/store.js'
 import zkPy from '@/components/zk-py/zk-py.vue'
 import zkDetail from '@/components/zk-detail/zk-detail.vue'
@@ -391,9 +392,22 @@ export default {
       uni.showToast({ title: on ? '已加入生字本' : '已移出生字本', icon: 'none' })
     },
 
-    speak() {
-      // P3 接 Edge TTS，先明确告知进度，不做假按钮
-      uni.showToast({ title: '发音在 P3 阶段接入', icon: 'none' })
+    /**
+     * 发音（P3）：统一入口，zk-detail 传 payload，列表小喇叭无参（播当前字卡读音）。
+     * 注意 @tap="speak" 时 uni-app 会把事件对象当参数传进来，所以要判 payload.kind。
+     */
+    async speak(p) {
+      let key = null
+      if (p && p.kind === 'word') {
+        key = wordKey(p.w)
+      } else if (p && p.kind === 'char') {
+        key = charKey(p.ch, p.py)
+      } else if (this.cur.ch) {
+        key = charKey(this.cur.ch, this.cur.py)
+      }
+      if (!key) return
+      const ok = await speakAudio(key)
+      if (!ok) uni.showToast({ title: '音频还没准备好', icon: 'none' })
     }
   }
 }

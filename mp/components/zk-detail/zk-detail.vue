@@ -50,7 +50,7 @@
             <text class="zd-block-t">组词</text>
           </view>
           <view class="zd-words">
-            <view v-for="(w, i) in item.words" :key="i" class="zd-word">
+            <view v-for="(w, i) in item.words" :key="i" class="zd-word" @tap="$emit('speak', { kind: 'word', w })">
               <text class="zd-word-t">{{ w }}</text>
             </view>
             <text v-if="!item.words || !item.words.length" class="zd-empty">暂无组词</text>
@@ -70,14 +70,20 @@
               class="zd-mrow"
               :class="{ on: r.isLesson }"
             >
-              <view class="zd-mhead">
+              <view class="zd-mhead" @tap="$emit('speak', { kind: 'char', ch: item.ch, py: r.py })">
                 <view class="zd-mpy">
                   <zk-py :text="r.py" size="sm" />
                 </view>
                 <text v-if="r.isLesson" class="zd-mtag">本课</text>
+                <view class="zd-mspk"><view class="zd-spk-i"></view></view>
               </view>
               <view class="zd-mwords">
-                <view v-for="(w, wi) in r.words" :key="wi" class="zd-mword">
+                <view
+                  v-for="(w, wi) in r.words"
+                  :key="wi"
+                  class="zd-mword"
+                  @tap.stop="$emit('speak', { kind: 'word', w })"
+                >
                   <text class="zd-mword-t">{{ w }}</text>
                 </view>
               </view>
@@ -420,6 +426,18 @@ export default {
   color: #c93a2b;
   background: #f9e9e4;
   border: 1px solid #f0d5cd;
+}
+/* 读音行小喇叭：点整行播该读音 */
+.zd-mspk {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fcf2ee;
+  border: 1px solid #f0dfbc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .zd-mwords {
   display: flex;
