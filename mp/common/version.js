@@ -2,7 +2,7 @@
  * 全局版本号：每次改动递增（P0 = v0.1.0）
  * 规则：改动提交信息与本文件版本号必须一致
  */
-export const APP_VERSION = 'v0.2.5'
+export const APP_VERSION = 'v0.2.6'
 
 /**
  * 设计令牌 —— 与 DESIGN.md v2.03 一一对应
@@ -65,14 +65,14 @@ export const SHEET = {
   pad: { maxWidth: 520, radius: 20, maxHeight: '86%', tz: 250, big: 72 }
 }
 
-/** 列表列数：课本每课 4 或 8 字，只有 4 列能让两种课都排满 */
+/** 列数：手机 3 列（2026-10-24 定案，4 列太挤）；平板按视口自适应 3~6 列，目标格宽 ≥148px */
 /** 多音字（P2）：单字最多展示几个读音 / 每读音最多几个组词 */
 export const MULTI = {
   maxReadings: 3,
   wordsPerReading: 3
 }
 
-export const GRID_COLS = { phone: 4, pad: 4 }
+export const GRID_COLS = { phone: 3, pad: 'auto', padMinCell: 148, padMax: 6 }
 
 /** 激励等级阶梯（累计字数达标晋级） */
 export const LEVELS = [

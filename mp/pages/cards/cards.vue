@@ -137,12 +137,18 @@ export default {
     },
     // 列宽直接内联：小程序 wxss 的媒体查询在某些机型/端上不生效，
     // 内联样式优先级最高，列数由 JS 判宽决定，两端一致。
-    // 列数两端都定 4：课本每课字数就是 4 或 8，只有 4 列能让这两种课都排满
-    //   （6 列时 4 字课空两格、8 字课断成 6+2）。原版 Web 的 grid 是
-    //   minmax(148px,1fr)，810 宽算下来也是 4 列。
-    //   手机单格 77px，所以组词胶囊做了紧凑化（见 .w），保证一行能放两个。
+    // 列数（2026-10-24 用户定案，推翻早期"两端 4 列"）：手机 3 列（4 列太挤）；
+    // 平板按视口宽度自适应，目标单格 ≥148px（原版 Web minmax(148px,1fr)），
+    // 实算 600→3 列 / 768→4 列 / 900→5 列 / 1024+→6 列封顶。
     cellStyle() {
-      return { width: this.isPad ? 'calc(25% - 14px)' : 'calc(25% - 8px)' }
+      const gap = this.isPad ? 14 : 8
+      let cols = 3
+      if (this.isPad) {
+        const inner = this.vw - 48          // .lessons 平板左右各 24px
+        cols = Math.floor((inner + gap) / (148 + gap))
+        cols = Math.max(3, Math.min(cols, 6))
+      }
+      return { width: 'calc(' + (100 / cols).toFixed(3) + '% - ' + gap + 'px)' }
     }
   },
   onLoad() {
