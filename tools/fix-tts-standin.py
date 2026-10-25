@@ -40,6 +40,8 @@ STANDIN_MAP = os.path.join(OUT, 'standin_map.json')
 CHARDATA = os.path.join(ROOT, 'tools', 'pinyin-data.txt')
 JIEBA = os.path.join(ROOT, 'tools', 'jieba_dict.txt')
 MULTI = os.path.join(ROOT, 'mp', 'static', 'data', 'multi_v2.json')
+FALLBACK_MANUAL = os.path.join(ROOT, 'tools', 'tts-fallback.json')  # 人工追加的降级条目
+FALLBACK_MAP = os.path.join(OUT, 'fallback_map.json')
 
 VOICE = 'zh-CN-XiaoxiaoNeural'
 RATE = '-15%'
@@ -80,6 +82,24 @@ def gb2312_ok(ch):
         return False
 
 
+def parse_pinyin_data():
+    """pinyin-data -> {char: [tone3 读音序]}。注意读音是逗号分隔在一个 token 里，
+    如 'U+4E86: le,liǎo,liào'；首读音近似该字的最常用读音（Edge 默认读音的先验）。"""
+    table = {}
+    for line in open(CHARDATA, encoding='utf-8'):
+        if line.startswith('#') or ':' not in line:
+            continue
+        head, tail = line.split(':', 1)
+        if not head.startswith('U+'):
+            continue
+        tok = tail.split('#')[0].split()
+        if not tok:
+            continue
+        ch = chr(int(head[2:], 16))
+        table[ch] = [tone3_slug(p) for p in tok[0].split(',') if p]
+    return table
+
+
 def load_single_readings():
     """pinyin-data -> {tone3: [(char, freq)]}，只收单读音字；
     替身硬条件：jieba 词频 >= 10（常用度）+ GB2312 内（Edge 词典稳）"""
@@ -93,20 +113,12 @@ def load_single_readings():
                 pass
 
     table = {}
-    for line in open(CHARDATA, encoding='utf-8'):
-        if line.startswith('#') or ':' not in line:
-            continue
-        head, tail = line.split(':', 1)
-        if not head.startswith('U+'):
-            continue
-        pys = tail.split('#')[0].split()
-        if len(pys) != 1:
+    for ch, t3s in parse_pinyin_data().items():
+        if len(t3s) != 1:
             continue  # 多读音字不当替身
-        ch = chr(int(head[2:], 16))
         if freq.get(ch, 0) < 10 or not gb2312_ok(ch):
             continue
-        t3 = tone3_slug(pys[0])
-        table.setdefault(t3, []).append((ch, freq.get(ch, 0)))
+        table.setdefault(t3s[0], []).append((ch, freq.get(ch, 0)))
     for t3 in table:
         table[t3].sort(key=lambda x: -x[1])
     return table
@@ -171,7 +183,66 @@ async def run(todo):
     return stat
 
 
+def build_fallbacks():
+    """无替身读音的降级方案：该读音不是字的默认读音（pinyin-data 首读音先验）时，
+    Edge 读单字必错调 -> 播放行降级为播第一个组词（整词连贯、读音正确）。
+    人工可经 tools/tts-fallback.json 追加（{"了:liao3": "了解"} 格式，key 冒号分隔）。"""
+    multi = json.load(open(MULTI, encoding='utf-8'))['chars']
+    _, miss = build_plan()
+    miss_keys = {'c:%s:%s' % (c, t3) for c, _, t3 in miss}
+    first = parse_pinyin_data()
+    manual = {}
+    if os.path.exists(FALLBACK_MANUAL):
+        manual = json.load(open(FALLBACK_MANUAL, encoding='utf-8'))
+
+    fb = {}
+    for ch, rs in multi.items():
+        for r in rs:
+            key = 'c:%s:%s' % (ch, r['tone3'])
+            word = ''
+            if key in manual:
+                word = manual[key]
+            elif key in miss_keys and first.get(ch, [''])[0] != r['tone3']:
+                word = (r.get('words') or [''])[0]
+            if word:
+                fb[key] = {'ch': ch, 'py': r['py'], 'word': word}
+    return fb
+
+
+def apply_fallbacks(fb):
+    """把降级词写进 audio_map.json 的 fallbackWord 字段（运行时据此改播组词）"""
+    m = json.load(open(MAP, encoding='utf-8'))
+    n = 0
+    for key, info in fb.items():
+        e = m['entries'].get(key)
+        if not e:
+            continue
+        if e.get('fallbackWord') == info['word']:
+            continue
+        e['fallbackWord'] = info['word']
+        n += 1
+    # 集合外的清掉旧字段（重跑幂等）
+    for key, e in m['entries'].items():
+        if key not in fb and 'fallbackWord' in e:
+            del e['fallbackWord']
+            n += 1
+    json.dump(m, open(MAP, 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
+    json.dump({'built': time.strftime('%Y-%m-%d %H:%M'),
+               'note': '无替身读音降级播组词（读音行点击播该读音的例词）',
+               'fallbacks': fb},
+              open(FALLBACK_MAP, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print('fallbackWord 写入 %d 条 -> audio_map.json；清单留档 fallback_map.json' % n)
+
+
 def main():
+    if '--fallbacks' in sys.argv:
+        fb = build_fallbacks()
+        print('降级播组词 %d 条：' % len(fb))
+        for k, v in sorted(fb.items()):
+            print('  %s %s(%s) -> 「%s」' % (v['ch'], v['py'], k.split(':')[2], v['word']))
+        apply_fallbacks(fb)
+        return
+
     plan_mode = '--plan' in sys.argv
     plan, miss = build_plan()
     print('多音字读音 %d 条：可替身 %d，无替身 %d' % (len(plan) + len(miss), len(plan), len(miss)))

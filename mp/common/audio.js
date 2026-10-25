@@ -62,6 +62,9 @@ export function stopSpeak() {
 /**
  * 播一条音频。返回 false 表示该 key 没有音频（调用方负责提示）。
  * 正在播的会被打断（连点下一个字立即换音，符合字卡交互直觉）。
+ *
+ * fallbackWord（P3-2）：无同音替身的非默认读音（了 liǎo、着 zháo 等），Edge 读单字
+ * 必错调，读音行降级为播该读音的例词整词——字音错不如词音对。
  */
 export async function speakAudio(key) {
   let m
@@ -70,8 +73,12 @@ export async function speakAudio(key) {
   } catch (e) {
     return false
   }
-  const en = m && m.entries && m.entries[key]
+  let en = m && m.entries && m.entries[key]
   if (!en) return false
+  if (en.fallbackWord) {
+    const wEn = m.entries['w:' + en.fallbackWord]
+    if (wEn) en = wEn
+  }
 
   let src = ''
   // #ifdef MP-WEIXIN

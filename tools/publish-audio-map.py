@@ -29,12 +29,15 @@ def main():
 
     entries = {}
     for key, e in src['entries'].items():
-        entries[key] = {
+        it = {
             'file': e['file'],
             'text': e['text'],
             'kind': e['kind'],
             'fileID': fileids.get(key),
         }
+        if e.get('fallbackWord'):
+            it['fallbackWord'] = e['fallbackWord']  # 无替身读音降级播组词（fix-tts-standin.py）
+        entries[key] = it
 
     doc = {
         'voice': src['voice'],
