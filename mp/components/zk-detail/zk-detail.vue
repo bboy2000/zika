@@ -31,7 +31,7 @@
       </view>
 
       <!-- body 滚动：田字格 → 翻字 → 组词 → 释义 -->
-      <scroll-view class="zd-body" scroll-y :show-scrollbar="false">
+      <view class="zd-body">
         <view class="zd-stage">
           <zk-tzg :char="item.ch" :size="isPad ? 250 : 180" />
         </view>
@@ -103,7 +103,7 @@
             </view>
           </view>
         </view>
-      </scroll-view>
+      </view>
 
       <!-- foot 固定：激励动作永远可见 -->
       <view class="zd-foot">
@@ -326,9 +326,12 @@ export default {
 /* body */
 .zd-body {
   flex: 1;
-  height: 0; /* 配合 flex:1 让 scroll-view 真正可滚 */
+  height: 0; /* 配合 flex:1 撑出实际高度，内容超出即滚动 */
   padding: 16px;
   box-sizing: border-box;
+  overflow-y: auto; /* 原生滚动：不用 scroll-view（H5 端内层 overflow 不生效，实测滚不动），view + overflow 两端通用 */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; /* 滚到头不把手势传给背景列表 */
 }
 .zd-stage {
   display: flex;
