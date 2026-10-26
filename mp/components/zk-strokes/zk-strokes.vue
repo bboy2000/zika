@@ -34,6 +34,7 @@ import HanziWriter from 'hanzi-writer'
 import RT from './rt.js'
 // #endif
 import { loadStrokes } from '@/common/strokes.js'
+import { APP_VERSION } from '@/common/version.js'
 
 /**
  * 笔顺动画米字格（P4）
@@ -55,7 +56,8 @@ export default {
   data() {
     return {
       failed: false,
-      dbg: ''
+      // 初值即版本指纹：能看到这行说明跑的是本次产物
+      dbg: APP_VERSION + ' 待初始化'
     }
   },
   computed: {
@@ -98,19 +100,19 @@ export default {
 
       // #ifdef MP-WEIXIN
       try {
-        this.dbg = '1 读数据'
+        this.dbg = APP_VERSION + ' 1 读数据'
         const data = await loadStrokes(ch)
         if (ch !== this.char) return // 弹层已切字，丢弃
-        this.dbg = '2 数据ok ' + (data && data.n ? data.n.length : 0) + '笔'
+        this.dbg = APP_VERSION + ' 2 数据ok ' + (data && data.n ? data.n.length : 0) + '笔'
         await this.$nextTick() // 确保 canvas 节点已渲染
         const rt = await RT.init(this)
         if (!rt.ok) {
-          this.dbg = 'X 画布 ' + (rt.why || '')
+          this.dbg = APP_VERSION + ' X 画布 ' + (rt.why || '')
           this.failed = true
           return
         }
         if (ch !== this.char) return
-        this.dbg = '3 画布' + rt.w + 'x' + rt.h + '@' + rt.dpr
+        this.dbg = APP_VERSION + ' 3 画布' + rt.w + 'x' + rt.h + '@' + rt.dpr
         // 诊断测试十字：动画一旦开始会由首帧 clearRect 清掉
         try {
           const c0 = rt.getContext()
@@ -147,18 +149,18 @@ export default {
         this.writer.setCharacter(ch)
           .then(() => {
             if (ch !== this.char || !this.writer) return null
-            this.dbg = '4 字已装 启动动画'
+            this.dbg = APP_VERSION + ' 4 字已装'
             const p = this.writer.animateCharacter()
-            this.dbg = '5 动画已启动'
-            if (p && p.catch) p.catch((e) => { this.dbg = 'E 动画 ' + (e && (e.errMsg || e.message)) })
+            this.dbg = APP_VERSION + ' 5 动画已启动'
+            if (p && p.catch) p.catch((e) => { this.dbg = APP_VERSION + ' E动画 ' + (e && (e.errMsg || e.message)) })
             return p
           })
           .catch((e) => {
-            this.dbg = 'E 装字 ' + (e && (e.errMsg || e.message || e))
+            this.dbg = APP_VERSION + ' E装字 ' + (e && (e.errMsg || e.message || e))
             if (ch === this.char) this.failed = true
           })
       } catch (e) {
-        this.dbg = 'E 初始化 ' + (e && (e.errMsg || e.message || e))
+        this.dbg = APP_VERSION + ' E初始化 ' + (e && (e.errMsg || e.message || e))
         this.failed = true
       }
       // #endif
