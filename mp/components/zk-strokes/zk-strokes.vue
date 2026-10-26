@@ -22,6 +22,9 @@
     <!-- #ifndef MP-WEIXIN -->
     <text class="zkst-t" :style="charStyle">{{ char }}</text>
     <!-- #endif -->
+
+    <!-- 诊断读数（v0.3.5 临时） -->
+    <text v-if="dbg" class="zkst-dbg">{{ dbg }}</text>
   </view>
 </template>
 
@@ -51,7 +54,8 @@ export default {
   },
   data() {
     return {
-      failed: false
+      failed: false,
+      dbg: ''
     }
   },
   computed: {
@@ -94,13 +98,32 @@ export default {
 
       // #ifdef MP-WEIXIN
       try {
+        this.dbg = '1 读数据'
         const data = await loadStrokes(ch)
         if (ch !== this.char) return // 弹层已切字，丢弃
+        this.dbg = '2 数据ok ' + (data && data.n ? data.n.length : 0) + '笔'
         await this.$nextTick() // 确保 canvas 节点已渲染
         const rt = await RT.init(this)
-        if (!rt.ok || ch !== this.char) {
+        if (!rt.ok) {
+          this.dbg = 'X 画布 ' + (rt.why || '')
           this.failed = true
           return
+        }
+        if (ch !== this.char) return
+        this.dbg = '3 画布' + rt.w + 'x' + rt.h + '@' + rt.dpr
+        // 诊断测试十字：动画一旦开始会由首帧 clearRect 清掉
+        try {
+          const c0 = rt.getContext()
+          c0.save()
+          c0.strokeStyle = '#ff0000'
+          c0.lineWidth = 2
+          c0.beginPath()
+          c0.moveTo(0, 0); c0.lineTo(rt.w, rt.h)
+          c0.moveTo(rt.w, 0); c0.lineTo(0, rt.h)
+          c0.stroke()
+          c0.restore()
+        } catch (e) {
+          this.dbg += ' 十字E'
         }
         this.writer = new HanziWriter({}, {
           width: this.size,
@@ -123,13 +146,19 @@ export default {
         // 必须先 setCharacter（老版走 HanziWriter.create 内部自带这步，直接 new 不会自动加载）
         this.writer.setCharacter(ch)
           .then(() => {
-            if (ch !== this.char || !this.writer) return
-            return this.writer.animateCharacter()
+            if (ch !== this.char || !this.writer) return null
+            this.dbg = '4 字已装 启动动画'
+            const p = this.writer.animateCharacter()
+            this.dbg = '5 动画已启动'
+            if (p && p.catch) p.catch((e) => { this.dbg = 'E 动画 ' + (e && (e.errMsg || e.message)) })
+            return p
           })
-          .catch(() => {
+          .catch((e) => {
+            this.dbg = 'E 装字 ' + (e && (e.errMsg || e.message || e))
             if (ch === this.char) this.failed = true
           })
       } catch (e) {
+        this.dbg = 'E 初始化 ' + (e && (e.errMsg || e.message || e))
         this.failed = true
       }
       // #endif
@@ -210,5 +239,21 @@ export default {
   font-family: 'zika-kai', 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif;
   font-weight: 400;
   transform: translateY(-1.5%);
+}
+/* 诊断读数（v0.3.5 临时） */
+.zkst-dbg {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  z-index: 5;
+  font-size: 10px;
+  line-height: 1.25;
+  color: #C93A2B;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 4px;
+  padding: 1px 2px;
+  word-break: break-all;
 }
 </style>
