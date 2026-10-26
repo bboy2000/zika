@@ -63,9 +63,12 @@ export function loadStrokes(ch) {
   // #ifdef MP-WEIXIN
   ensureCloud()
   return new Promise((resolve, reject) => {
+    // 8s 超时：downloadFile 挂起时也能走降级，不让弹层静默空白
+    const timer = setTimeout(() => reject(new Error('strokes download timeout')), 8000)
     wx.cloud.downloadFile({
       fileID: CLOUD_PREFIX + ch + '.json',
       success: (res) => {
+        clearTimeout(timer)
         try {
           const d = JSON.parse(wx.getFileSystemManager().readFileSync(res.tempFilePath, 'utf8'))
           mem[ch] = d
@@ -75,7 +78,10 @@ export function loadStrokes(ch) {
           reject(e)
         }
       },
-      fail: reject
+      fail: (err) => {
+        clearTimeout(timer)
+        reject(err)
+      }
     })
   })
   // #endif

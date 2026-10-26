@@ -6,12 +6,13 @@
     <view class="zkst-d zkst-d1"></view>
     <view class="zkst-d zkst-d2"></view>
 
-    <!-- 小程序：canvas 透明叠加，只画笔画 -->
+    <!-- 小程序：canvas(2d) 透明叠加，只画笔画 -->
     <!-- #ifdef MP-WEIXIN -->
     <canvas
       v-if="!failed"
+      id="zkstrokes-canvas"
+      type="2d"
       class="zkst-c"
-      canvas-id="zkstrokes-canvas"
       :style="boxStyle"
     ></canvas>
     <!-- #endif -->
@@ -95,6 +96,12 @@ export default {
       try {
         const data = await loadStrokes(ch)
         if (ch !== this.char) return // 弹层已切字，丢弃
+        await this.$nextTick() // 确保 canvas 节点已渲染
+        const rt = await RT.init(this)
+        if (!rt.ok || ch !== this.char) {
+          this.failed = true
+          return
+        }
         this.writer = new HanziWriter({}, {
           width: this.size,
           height: this.size,
@@ -110,7 +117,7 @@ export default {
           outlineColor: '#d8cfb8',
           strokeAnimationSpeed: 1.1,
           delayBetweenStrokes: 260,
-          rendererOverride: { createRenderTarget: () => RT.init(this) },
+          rendererOverride: { createRenderTarget: () => rt },
           renderer: 'canvas'
         })
         // 必须先 setCharacter（老版走 HanziWriter.create 内部自带这步，直接 new 不会自动加载）
