@@ -1,39 +1,39 @@
 {
-  "name": "zika-mp",
-  "appid": "wxae9c9b949de44360",
-  "description": "小学写字表字卡小程序",
-  "versionName": "0.1.4",
-  "versionCode": "104",
-  "transformPx": false,
-  "app-plus": {
-    "usingComponents": true,
-    "nvueStyleCompiler": "uni-app",
-    "compilerVersion": 3
-  },
-  "quickapp": {},
-  "mp-weixin": {
-    "appid": "wxae9c9b949de44360",
-    "resizable": true,
-    "setting": {
-      "urlCheck": false,
-      "es6": true,
-      "minified": true,
-      "postcss": true
+    "name" : "zika-mp",
+    "appid" : "__UNI__F1997F0",
+    "description" : "小学写字表字卡小程序",
+    "versionName" : "0.1.4",
+    "versionCode" : "104",
+    "transformPx" : false,
+    "app-plus" : {
+        "usingComponents" : true,
+        "nvueStyleCompiler" : "uni-app",
+        "compilerVersion" : 3
     },
-    "usingComponents": true,
-    "lazyCodeLoading": "requiredComponents"
-  },
-  "mp-alipay": {
-    "usingComponents": true
-  },
-  "mp-baidu": {
-    "usingComponents": true
-  },
-  "mp-toutiao": {
-    "usingComponents": true
-  },
-  "uniStatistics": {
-    "enable": false
-  },
-  "vueVersion": "3"
+    "quickapp" : {},
+    "mp-weixin" : {
+        "appid" : "wxae9c9b949de44360",
+        "resizable" : true,
+        "setting" : {
+            "urlCheck" : false,
+            "es6" : true,
+            "minified" : true,
+            "postcss" : true
+        },
+        "usingComponents" : true,
+        "lazyCodeLoading" : "requiredComponents"
+    },
+    "mp-alipay" : {
+        "usingComponents" : true
+    },
+    "mp-baidu" : {
+        "usingComponents" : true
+    },
+    "mp-toutiao" : {
+        "usingComponents" : true
+    },
+    "uniStatistics" : {
+        "enable" : false
+    },
+    "vueVersion" : "3"
 }

@@ -33,7 +33,7 @@
       <!-- body 滚动：田字格 → 翻字 → 组词 → 释义 -->
       <view class="zd-body">
         <view class="zd-stage">
-          <zk-tzg :char="item.ch" :size="isPad ? 250 : 180" />
+          <zk-strokes :char="item.ch" :size="isPad ? 250 : 180" />
         </view>
 
         <view class="zd-nav">
@@ -121,6 +121,7 @@
 <script>
 import zkPy from '@/components/zk-py/zk-py.vue'
 import zkTzg from '@/components/zk-tzg/zk-tzg.vue'
+import zkStrokes from '@/components/zk-strokes/zk-strokes.vue'
 
 /**
  * 字卡详情弹层（DESIGN.md 5.5）
@@ -134,7 +135,7 @@ import zkTzg from '@/components/zk-tzg/zk-tzg.vue'
  */
 export default {
   name: 'zk-detail',
-  components: { zkPy, zkTzg },
+  components: { zkPy, zkTzg, zkStrokes },
   props: {
     show: { type: Boolean, default: false },
     item: { type: Object, default: () => ({ ch: '', py: '', words: [], lesson: '', defs: [] }) },
