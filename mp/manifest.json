@@ -1,6 +1,6 @@
 {
   "name": "zika-mp",
-  "appid": "",
+  "appid": "wxae9c9b949de44360",
   "description": "小学写字表字卡小程序",
   "versionName": "0.1.4",
   "versionCode": "104",
@@ -12,7 +12,7 @@
   },
   "quickapp": {},
   "mp-weixin": {
-    "appid": "",
+    "appid": "wxae9c9b949de44360",
     "resizable": true,
     "setting": {
       "urlCheck": false,
