@@ -120,20 +120,6 @@ export default {
         }
         if (ch !== this.char) return
         this.dbg = APP_VERSION + ' 3 画布' + rt.w + 'x' + rt.h + '@' + rt.dpr
-        // 诊断测试十字：动画一旦开始会由首帧 clearRect 清掉
-        try {
-          const c0 = rt.getContext()
-          c0.save()
-          c0.strokeStyle = '#ff0000'
-          c0.lineWidth = 2
-          c0.beginPath()
-          c0.moveTo(0, 0); c0.lineTo(rt.w, rt.h)
-          c0.moveTo(rt.w, 0); c0.lineTo(0, rt.h)
-          c0.stroke()
-          c0.restore()
-        } catch (e) {
-          this.dbg += ' 十字E'
-        }
         this.writer = new HanziWriter({}, {
           width: this.size,
           height: this.size,
@@ -156,11 +142,38 @@ export default {
         this.writer.setCharacter(ch)
           .then(() => {
             if (ch !== this.char || !this.writer) return null
-            this.dbg = APP_VERSION + ' 4 字已装'
-            const p = this.writer.animateCharacter()
-            this.dbg = APP_VERSION + ' 5 动画已启动'
-            if (p && p.catch) p.catch((e) => { this.dbg = APP_VERSION + ' E动画 ' + (e && (e.errMsg || e.message)) })
-            return p
+            // === v0.3.8 自检：装字已完成（首帧轮廓已画），立刻补画红块并读回像素 ===
+            // 像素读到红色 → 绘制确实进了画布缓冲区，看不见就是显示层问题
+            // 像素全 0 → 绘制没落到缓冲区，问题在 ctx/画布绑定
+            let pix = 'na'
+            try {
+              const c0 = rt.getContext()
+              const W = Math.round(rt.w * rt.dpr)
+              const H = Math.round(rt.h * rt.dpr)
+              c0.save()
+              c0.setTransform(1, 0, 0, 1, 0, 0) // 复位成设备像素坐标，和 hanzi-writer 的变换解耦
+              c0.fillStyle = '#ff0000'
+              c0.fillRect(Math.round(W / 2) - 20, Math.round(H / 2) - 20, 40, 40)
+              c0.restore()
+              try {
+                const d = c0.getImageData(Math.round(W / 2), Math.round(H / 2), 1, 1).data
+                pix = d[0] + ',' + d[1] + ',' + d[2] + ',' + d[3]
+              } catch (e2) {
+                pix = 'noGID'
+              }
+            } catch (e) {
+              pix = 'drawE:' + (e && (e.errMsg || e.message))
+            }
+            this.dbg = APP_VERSION + ' 4 字已装 P:' + pix
+            // 停 3 秒让红块可见，再启动动画（动画首帧会 clearRect 清掉红块）
+            const my = this._seq = (this._seq || 0) + 1
+            setTimeout(() => {
+              if (my !== this._seq || ch !== this.char || !this.writer) return
+              const p = this.writer.animateCharacter()
+              this.dbg = APP_VERSION + ' 5 动画已启动'
+              if (p && p.catch) p.catch((e) => { this.dbg = APP_VERSION + ' E动画 ' + (e && (e.errMsg || e.message)) })
+            }, 3000)
+            return null
           })
           .catch((e) => {
             this.dbg = APP_VERSION + ' E装字 ' + (e && (e.errMsg || e.message || e))
