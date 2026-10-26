@@ -113,7 +113,15 @@ export default {
           rendererOverride: { createRenderTarget: () => RT.init(this) },
           renderer: 'canvas'
         })
-        this.writer.animateCharacter()
+        // 必须先 setCharacter（老版走 HanziWriter.create 内部自带这步，直接 new 不会自动加载）
+        this.writer.setCharacter(ch)
+          .then(() => {
+            if (ch !== this.char || !this.writer) return
+            return this.writer.animateCharacter()
+          })
+          .catch(() => {
+            if (ch === this.char) this.failed = true
+          })
       } catch (e) {
         this.failed = true
       }
