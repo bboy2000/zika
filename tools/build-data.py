@@ -4,7 +4,7 @@ zika 小程序数据构建脚本
 把 Web 版 public/chars.json 拆成小程序端可直接加载的静态数据。
 
 输入：public/chars.json
-输出：mp/static/data/
+输出：mp/common/data-json/
     index.json          册索引（册名/课数/字数），首页列表用
     books/<bookId>.json 单册数据（lesson -> chars）
     dict.json           全局字典（部首结构 / 释义 / 多音字）
@@ -17,7 +17,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "public", "chars.json")
-OUT_DIR = os.path.join(ROOT, "mp", "static", "data")
+OUT_DIR = os.path.join(ROOT, "mp", "common", "data-json")
 OUT_BOOKS = os.path.join(OUT_DIR, "books")
 
 errors = []

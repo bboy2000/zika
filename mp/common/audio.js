@@ -6,12 +6,15 @@
  *   组词整词  w:{词}           如 w:一个（整词连贯，不逐字拼接）
  *
  * src 规则：
- *   小程序端  fileID（云存储）—— P3-3 开通云开发上传后由 publish 脚本回填
+ *   小程序端  CLOUD_PREFIX + file（云存储 fileID 运行时拼接，包内只存文件名）
  *   H5 预览   /audio/{file}    —— 预览服务的 dist 里手动放 audio/ 目录（不进源码，避免包超限）
  *
  * 为什么不逐字拼：用户明确否决过「一个+个」式的逐字拼接发音，组词一律整词合成。
  */
 import { loadJSON } from './data.js'
+
+/** 微信云开发 jiangbian 环境的云存储前缀（tools/upload_audio_wx.py 上传产出） */
+const CLOUD_PREFIX = 'cloud://jiangbian-d5gnaoxv1ae2d4e78.6a69-jiangbian-d5gnaoxv1ae2d4e78-1516998999/audio/'
 
 const TONEMAP = {
   'ā': ['a', 1], 'á': ['a', 2], 'ǎ': ['a', 3], 'à': ['a', 4],
@@ -44,7 +47,7 @@ let mapCache = null
 
 export function loadAudioMap() {
   if (mapCache) return Promise.resolve(mapCache)
-  return loadJSON('static/data/audio_map.json').then((m) => {
+  return loadJSON('data-json/audio_map.json').then((m) => {
     mapCache = m
     return m
   })
@@ -82,7 +85,8 @@ export async function speakAudio(key) {
 
   let src = ''
   // #ifdef MP-WEIXIN
-  src = en.fileID || ''
+  // 包内 audio_map 不存完整 fileID（省 1.4MB 主包体积），运行时用环境前缀拼回
+  src = CLOUD_PREFIX + en.file
   // #endif
   // #ifndef MP-WEIXIN
   src = '/audio/' + en.file

@@ -1,70 +1,88 @@
 /**
- * 数据层 —— 读代码包内 JSON + 内存缓存
+ * 数据层 —— 编译期静态 import + 内存直读
  *
- * 为什么不 import：12 册 + 字典共 530KB，全部 import 会一次性进主包 js 并常驻内存。
- * 按需读包内文件，切册才加载该册（最大 12KB），字典首次进详情才加载。
+ * v0.3.1 起改为静态 import：微信打包后 FileSystemManager 无法可靠读取代码包内
+ * JSON（报 permission denied / no such file），编译期注入是唯一稳妥方式。
+ * 数据文件在 common/data-json/（不在 static/，避免打包双份体积）。
+ * 代价：数据随主包常驻（约 1.4MB，主包限额 2MB 内）；换取零运行时读取延迟。
  *
- * 小程序端用 FileSystemManager 读代码包文件（包内文件不走网络，无需 downloadFile）
- * H5 端（预览用）走 fetch
+ * 数据再生成工具（build-data.py / build-multi.py / build-defs.py /
+ * publish-audio-map.py）已同步改写到 mp/common/data-json/。
  */
+
+import indexData from './data-json/index.json'
+import dictData from './data-json/dict.json'
+import multiData from './data-json/multi_v2.json'
+import defsData from './data-json/defs_v2.json'
+import audioMapData from './data-json/audio_map.json'
+
+import yiShang from './data-json/books/yi_shang.json'
+import yiXia from './data-json/books/yi_xia.json'
+import erShang from './data-json/books/er_shang.json'
+import erXia from './data-json/books/er_xia.json'
+import sanShang from './data-json/books/san_shang.json'
+import sanXia from './data-json/books/san_xia.json'
+import siShang from './data-json/books/si_shang.json'
+import siXia from './data-json/books/si_xia.json'
+import wuShang from './data-json/books/wu_shang.json'
+import wuXia from './data-json/books/wu_xia.json'
+import liuShang from './data-json/books/liu_shang.json'
+import liuXia from './data-json/books/liu_xia.json'
+
+const BOOKS = {
+  yi_shang: yiShang, yi_xia: yiXia,
+  er_shang: erShang, er_xia: erXia,
+  san_shang: sanShang, san_xia: sanXia,
+  si_shang: siShang, si_xia: siXia,
+  wu_shang: wuShang, wu_xia: wuXia,
+  liu_shang: liuShang, liu_xia: liuXia
+}
+
+const DATA = {
+  'index.json': indexData,
+  'dict.json': dictData,
+  'multi_v2.json': multiData,
+  'defs_v2.json': defsData,
+  'audio_map.json': audioMapData
+}
 
 const cache = Object.create(null)
 
-function readRaw(rel) {
-  return new Promise((resolve, reject) => {
-    // #ifdef MP-WEIXIN
-    const fs = wx.getFileSystemManager()
-    let raw = null
-    try {
-      raw = fs.readFileSync(rel, 'utf8')
-    } catch (e) {
-      // 少数基础库要求带前导斜杠，兜底再试一次
-      try {
-        raw = fs.readFileSync('/' + rel, 'utf8')
-      } catch (e2) {
-        reject(e2)
-        return
-      }
-    }
-    try {
-      resolve(JSON.parse(raw))
-    } catch (e) {
-      reject(e)
-    }
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    fetch('/' + rel)
-      .then((r) => r.json())
-      .then(resolve)
-      .catch(reject)
-    // #endif
-  })
+function resolve(rel) {
+  // rel 形如 'data-json/index.json' / 'data-json/books/er_shang.json'
+  const name = rel.replace(/^data-json\//, '')
+  if (DATA[name]) return DATA[name]
+  const m = name.match(/^books\/([\w-]+)\.json$/)
+  if (m && BOOKS[m[1]]) return BOOKS[m[1]]
+  throw new Error('未知数据文件: ' + rel)
 }
 
+/** 兼容旧接口：现在数据已在内存，直接返回 */
 export function loadJSON(rel) {
-  if (cache[rel]) return Promise.resolve(cache[rel])
-  return readRaw(rel).then((d) => {
-    cache[rel] = d
-    return d
-  })
+  if (!cache[rel]) {
+    try {
+      cache[rel] = Promise.resolve(resolve(rel))
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  }
+  return cache[rel]
 }
 
 /** 册目录：{version, books:[{id,label,lessonCount,charCount,size}]} */
-export const loadIndex = () => loadJSON('static/data/index.json')
+export const loadIndex = () => loadJSON('data-json/index.json')
 
 /** 单册写字表：{id,label,lessons:[[课名,[[字,拼音,[词...]],...]],...],count} */
-export const loadBook = (id) => loadJSON('static/data/books/' + id + '.json')
+export const loadBook = (id) => loadJSON('data-json/books/' + id + '.json')
 
 /** 字库：{radicals,explanations,multi} */
-export const loadDict = () => loadJSON('static/data/dict.json')
+export const loadDict = () => loadJSON('data-json/dict.json')
 
 /**
  * 多音字表（P2 重建，tools/build-multi.py 产出）
  * { _meta:{version,count}, chars:{ 字: [{py,tone3,isLesson,support,lessons,words}] } }
- * 与主数据分离：主库每字只标本课读音，这里补全该字的其他常用读音。
  */
-export const loadMulti = () => loadJSON('static/data/multi_v2.json')
+export const loadMulti = () => loadJSON('data-json/multi_v2.json')
 
 /** 册 id → {grade:'一年级', vol:'上册'} */
 export function splitLabel(label) {
@@ -76,9 +94,5 @@ export function splitLabel(label) {
 /**
  * 释义表（P2.5 重采，tools/build-defs.py 产出）
  * { version, chars:{ 字: {py, defs:[义项...], src} } }
- *
- * 为什么新开一张表而不复用 dict.json 的 explanations：
- * 旧库是古汉语字典抓取残留（111 字缺失、328 条含〈古〉〈引〉标记、307 条引号错位），
- * 清洗规则补不回来——只能重采。新表按「本课读音」取义项，与多音字表口径一致。
  */
-export const loadDefs = () => loadJSON('static/data/defs_v2.json')
+export const loadDefs = () => loadJSON('data-json/defs_v2.json')

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-释义重采：搜狗汉语 shiyiBase → 小学生可读短释义，产出 mp/static/data/defs_v2.json
+释义重采：搜狗汉语 shiyiBase → 小学生可读短释义，产出 mp/common/data-json/defs_v2.json
 
 为什么重采：旧库 explanations 是古汉语字典抓取残留，2307 字里
   111 字完全缺失、130 条开头带拼音残片（「上」= àng；位置在…）、
@@ -34,7 +34,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE = os.path.join(os.environ.get('TEMP', '/tmp'), 'zika-defs-raw')
-OUT = os.path.join(ROOT, 'mp', 'static', 'data', 'defs_v2.json')
+OUT = os.path.join(ROOT, 'mp', 'common', 'data-json', 'defs_v2.json')
 OVERRIDE = os.path.join(ROOT, 'tools', 'def-override.json')
 
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '

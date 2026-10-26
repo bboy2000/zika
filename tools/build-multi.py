@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-多音字重建（P2 数据层）—— 产出 mp/static/data/multi_v2.json
+多音字重建（P2 数据层）—— 产出 mp/common/data-json/multi_v2.json
 
 旧库 369 字的问题：读音靠人工列、没有出处、组词不按读音校验
 （「作房」「锁哪」「鱼肚」「不更事」这类都是错读音/生僻词的残留）。
@@ -20,7 +20,7 @@
 
 用法
     python tools/build-multi.py            # 只出报告 design/multi-review.md
-    python tools/build-multi.py --apply    # 写 mp/static/data/multi_v2.json
+    python tools/build-multi.py --apply    # 写 mp/common/data-json/multi_v2.json
 """
 import json
 import math
@@ -43,7 +43,7 @@ ROOT = fw.ROOT
 SRC = fw.SRC
 JIEBA = fw.JIEBA
 REPORT = os.path.join(ROOT, "design", "multi-review.md")
-OUT = os.path.join(ROOT, "mp", "static", "data", "multi_v2.json")
+OUT = os.path.join(ROOT, "mp", "common", "data-json", "multi_v2.json")
 OVERRIDE_FILE = os.path.join(ROOT, "tools", "multi-override.json")
 
 SUPPORT_MIN = 2.0        # 读音支撑度下限（生僻音基本为 0，常用音两位数）
