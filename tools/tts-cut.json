@@ -1,0 +1,238 @@
+{
+ "date": "2026-10-25",
+ "method": "edge-tts word cut",
+ "count": 32,
+ "kept_fallback": [
+  "c:儿:er",
+  "c:别:bie4",
+  "c:囊:nang1",
+  "c:爪:zhua3",
+  "c:血:xie3"
+ ],
+ "entries": {
+  "c:了:liao3": {
+   "ch": "了",
+   "py": "liǎo",
+   "display_word": "了解",
+   "audio_source": "知了(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:伙:huo": {
+   "ch": "伙",
+   "py": "huo",
+   "display_word": "家伙",
+   "audio_source": "家伙(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:佛:fo2": {
+   "ch": "佛",
+   "py": "fó",
+   "display_word": "佛像",
+   "audio_source": "佛像(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:作:zuo1": {
+   "ch": "作",
+   "py": "zuō",
+   "display_word": "作坊",
+   "audio_source": "作坊(整词)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:切:qie1": {
+   "ch": "切",
+   "py": "qiē",
+   "display_word": "切开",
+   "audio_source": "切开(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:卡:qia3": {
+   "ch": "卡",
+   "py": "qiǎ",
+   "display_word": "发卡",
+   "audio_source": "发卡(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:吐:tu4": {
+   "ch": "吐",
+   "py": "tù",
+   "display_word": "吐血",
+   "audio_source": "吐血(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:和:huo": {
+   "ch": "和",
+   "py": "huo",
+   "display_word": "暖和",
+   "audio_source": "暖和(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:啦:la1": {
+   "ch": "啦",
+   "py": "lā",
+   "display_word": "哗啦",
+   "audio_source": "哗啦(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:嚷:rang1": {
+   "ch": "嚷",
+   "py": "rāng",
+   "display_word": "嚷嚷",
+   "audio_source": "嚷嚷(整词,-15%)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:头:tou": {
+   "ch": "头",
+   "py": "tou",
+   "display_word": "石头",
+   "audio_source": "石头(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:家:jia": {
+   "ch": "家",
+   "py": "jia",
+   "display_word": "行家",
+   "audio_source": "行家(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:应:ying4": {
+   "ch": "应",
+   "py": "yìng",
+   "display_word": "应用",
+   "audio_source": "应用(整词)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:弄:long4": {
+   "ch": "弄",
+   "py": "lòng",
+   "display_word": "弄堂",
+   "audio_source": "弄堂(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:得:de": {
+   "ch": "得",
+   "py": "de",
+   "display_word": "显得",
+   "audio_source": "显得(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:得:dei3": {
+   "ch": "得",
+   "py": "děi",
+   "display_word": "总得",
+   "audio_source": "非得(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:恶:e3": {
+   "ch": "恶",
+   "py": "ě",
+   "display_word": "恶心",
+   "audio_source": "恶心(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:扫:sao4": {
+   "ch": "扫",
+   "py": "sào",
+   "display_word": "扫把",
+   "audio_source": "扫把(整词)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:挑:tiao3": {
+   "ch": "挑",
+   "py": "tiǎo",
+   "display_word": "挑战",
+   "audio_source": "挑战(整词)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:晃:huang4": {
+   "ch": "晃",
+   "py": "huàng",
+   "display_word": "摇晃",
+   "audio_source": "摇晃(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:模:mu2": {
+   "ch": "模",
+   "py": "mú",
+   "display_word": "模样",
+   "audio_source": "模样(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:横:heng4": {
+   "ch": "横",
+   "py": "hèng",
+   "display_word": "骄横",
+   "audio_source": "骄横(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:漂:piao3": {
+   "ch": "漂",
+   "py": "piǎo",
+   "display_word": "漂白",
+   "audio_source": "漂白(整词)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:漂:piao4": {
+   "ch": "漂",
+   "py": "piào",
+   "display_word": "漂亮",
+   "audio_source": "漂亮(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:着:zhao2": {
+   "ch": "着",
+   "py": "zháo",
+   "display_word": "点着",
+   "audio_source": "着火(整词,-15%)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:空:kong4": {
+   "ch": "空",
+   "py": "kòng",
+   "display_word": "空白",
+   "audio_source": "空白(整词)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:色:shai3": {
+   "ch": "色",
+   "py": "shǎi",
+   "display_word": "褪色",
+   "audio_source": "色子(整词,-15%)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:若:re3": {
+   "ch": "若",
+   "py": "rě",
+   "display_word": "般若",
+   "audio_source": "般若(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:茄:qie2": {
+   "ch": "茄",
+   "py": "qié",
+   "display_word": "茄子",
+   "audio_source": "茄子(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:闷:men1": {
+   "ch": "闷",
+   "py": "mēn",
+   "display_word": "闷热",
+   "audio_source": "闷热(整词,-15%)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:隆:long1": {
+   "ch": "隆",
+   "py": "lōng",
+   "display_word": "轰隆",
+   "audio_source": "轰隆(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  },
+  "c:难:nan4": {
+   "ch": "难",
+   "py": "nàn",
+   "display_word": "灾难",
+   "audio_source": "灾难(逗号)",
+   "method": "整词合成+能量谷切分+8ms淡入淡出"
+  }
+ }
+}
