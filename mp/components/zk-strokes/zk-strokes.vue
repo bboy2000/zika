@@ -40,8 +40,15 @@ import { APP_VERSION } from '@/common/version.js'
  * 笔顺动画米字格（P4）
  *
  * 复用老 Web 版方案（public/index.html playAnimation）：
- * 动态笔顺 = hanzi-writer@3.7.3，参数同款（描边 #33322e / 轮廓 #d8cfb8 / 速 1.1 / 间隔 260）。
+ * 动态笔顺 = hanzi-writer，参数同款（描边 #33322e / 轮廓 #d8cfb8 / 速 1.1 / 间隔 260）。
  * 米字格规格 = zk-tzg 同款（DESIGN.md 4.7），canvas 透明叠加只画笔画。
+ *
+ * ⚠️ 版本必须锁 2.0.4，不能升 3.x（也已锁在 package.json）：
+ *    3.x 的 canvas 渲染器用 `new Path2D(笔画路径)` 画描边，而微信小程序 Canvas 2D
+ *    不提供 Path2D，初始化时直接抛 ReferenceError: Path2D is not defined，
+ *    结果是画布被 clearRect 清空后一笔都画不出来（表现为「米字格在、字是空的」）。
+ *    2.x 有降级分支 `if (usePath2D && global.Path2D) … else pathStringToCanvas(...)`，
+ *    官方小程序移植版 hanzi-writer-miniprogram 也是依赖 ^2.0.4，就是同一个原因。
  * 数据 = 云存储按字 JSON（common/strokes.js），charDataLoader 喂给 hanzi-writer。
  *
  * 对外接口与 zk-tzg 一致（char/size），详情弹层可直接替换。

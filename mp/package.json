@@ -1,1 +1,7 @@
-{"name":"zika-mp","version":"0.3.2","dependencies":{"hanzi-writer":"^3.7.3"}}
+{
+  "name": "zika-mp",
+  "version": "0.3.7",
+  "dependencies": {
+    "hanzi-writer": "2.0.4"
+  }
+}
